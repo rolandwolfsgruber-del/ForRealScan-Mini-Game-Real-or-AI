@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForRealScan: Real or AI?</title>
+    <style>
+        :root {
+            --color-bg-1: #0f172a;
+            --color-bg-2: #334155;
+            --color-accent: #6366f1;
+            --color-real: #10b981;
+            --color-ai: #3b82f6;
+            --color-text: #f8fafc;
+            --color-text-muted: #cbd5e1;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        @keyframes gradient-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-5px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        @keyframes fire {
+            0% {
+                text-shadow: 0 0 4px #fff, 0 -5px 4px #ff3, 2px -10px 6px #fd3, -2px -15px 11px #f80, 2px -25px 18px #f20;
+            }
+
+            50% {
+                text-shadow: 0 0 4px #fff, 0 -5px 4px #ff3, 2px -12px 8px #fd3, -2px -20px 13px #f80, 2px -30px 22px #f20;
+            }
+
+            100% {
+                text-shadow: 0 0 4px #fff, 0 -5px 4px #ff3, 2px -10px 6px #fd3, -2px -15px 11px #f80, 2px -25px 18px #f20;
+            }
+        }
+
+        @keyframes blue-fire {
+            0% {
+                text-shadow: 0 0 4px #fff, 0 -5px 4px #2ff, 2px -10px 6px #2cf, -2px -15px 11px #29f, 2px -25px 18px #24f;
+            }
+
+            50% {
+                text-shadow: 0 0 4px #fff, 0 -5px 4px #2ff, 2px -12px 8px #2cf, -2px -20px 13px #29f, 2px -30px 22px #24f;
+            }
+
+            100% {
+                text-shadow: 0 0 4px #fff, 0 -5px 4px #2ff, 2px -10px 6px #2cf, -2px -15px 11px #29f, 2px -25px 18px #24f;
+            }
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #0f172a);
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+            color: var(--color-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            overflow-x: hidden;
+            user-select: none;
+            transition: background 1s ease;
+        }
+
+        /* Perfect Run Golden Theme */
+        body.perfect-run {
+            background: linear-gradient(-45deg, #422006, #713f12, #a16207, #422006);
+            background-size: 400% 400%;
+        }
+
+        body.perfect-run .glass-panel {
+            border-color: rgba(253, 224, 71, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(234, 179, 8, 0.2);
+        }
+
+        body.perfect-run h1 {
+            background: linear-gradient(to right, #fef08a, #eab308);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 640px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .shake-effect {
+            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+        }
+
+        /* Confetti Canvas */
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Header & Top Bar */
+        .top-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .mute-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--color-text-muted);
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mute-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .lives-display {
+            font-size: 1.5rem;
+            letter-spacing: 0.2rem;
+            display: none;
+            /* Hidden by default */
+        }
+
+        header {
+            text-align: center;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.2rem;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            color: var(--color-text-muted);
+            font-size: 1rem;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+        }
+
+        /* Start Screen */
+        .start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            width: 100%;
+            padding: 3rem 2rem;
+        }
+
+        .mode-btn {
+            width: 100%;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mode-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .mode-normal {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .mode-hardcore {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+            border: 2px solid #fca5a5;
+        }
+
+        .mode-desc {
+            font-size: 0.8rem;
+            font-weight: 400;
+            opacity: 0.9;
+            text-transform: none;
+        }
+
+        /* Progress & Timer */
+        .status-bars {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-real), var(--color-ai));
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .timer-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            background: #ef4444;
+            width: 100%;
+            transform-origin: left;
+            transition: width 0.1s linear;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border-radius: 1.5rem;
+            transition: border-color 0.5s, box-shadow 0.5s;
+        }
+
+        .score-panel {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .score-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .score-label {
+            font-size: 0.7rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.2rem;
+        }
+
+        .score-value {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .multiplier {
+            color: var(--color-accent);
+            font-size: 0.9rem;
+            font-weight: 800;
+        }
+
+        /* Combo Visuals */
+        .combo-glow {
+            color: #fbbf24;
+            text-shadow: 0 0 10px #fbbf24;
+        }
+
+        .combo-fire {
+            color: #fff;
+            animation: fire 0.5s ease-in-out infinite alternate;
+            font-size: 1.5em;
+            position: relative;
+            z-index: 100;
+            filter: brightness(1.3);
+        }
+
+        .combo-blue-fire {
+            color: #fff;
+            animation: blue-fire 0.5s ease-in-out infinite alternate;
+            font-size: 1.8em;
+            position: relative;
+            z-index: 100;
+            filter: brightness(1.5);
+        }
+
+        .card {
+            width: 100%;
+            padding: 2rem;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: none;
+            /* Hidden initially */
+        }
+
+        .image-frame {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #000;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            position: relative;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .game-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #000;
+            display: block;
+            transition: opacity 0.3s ease;
+        }
+
+        .game-image.fade-out {
+            opacity: 0;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            border: none;
+            padding: 1.25rem;
+            border-radius: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Shine effect */
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::after {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            filter: grayscale(0.8);
+        }
+
+        .btn-real {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-real:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-ai {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-ai:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+        }
+
+        .feedback-area {
+            min-height: 4rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 0.5rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
+        }
+
+        .feedback-area.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feedback-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .points-gained {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fbbf24;
+        }
+
+        .btn-next {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            margin-top: 0.5rem;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+            display: none;
+        }
+
+        .btn-next:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Results */
+        .results-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            padding: 3rem 2rem;
+        }
+
+        .score-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: conic-gradient(var(--color-real) 0%, var(--color-real) 0%, rgba(255, 255, 255, 0.1) 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(16, 185, 129, 0.2);
+            position: relative;
+        }
+
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            inset: 10px;
+            background: #1e293b;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .score-circle-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .final-points {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(to bottom, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .final-percent {
+            font-size: 1rem;
+            color: var(--color-text-muted);
+        }
+
+        .results-msg {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        /* Stats & Highscore */
+        .stats-container {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .highscore-section {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+
+        .highscore-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-accent);
+        }
+
+        .highscore-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .highscore-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .highscore-name {
+            font-weight: 600;
+        }
+
+        .highscore-score {
+            color: var(--color-real);
+            font-weight: 700;
+        }
+
+        .highscore-input-area {
+            display: none;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .highscore-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-family: inherit;
+            text-align: center;
+        }
+
+        .btn-save {
+            background: var(--color-accent);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-share {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-share:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-reset-score {
+            background: transparent;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            width: 100%;
+            opacity: 0.7;
+        }
+
+        .btn-reset-score:hover {
+            background: rgba(239, 68, 68, 0.1);
+            opacity: 1;
+        }
+
+        @media (max-width: 640px) {
+            .controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;">
+        <div style="font-size: 2rem; font-weight: 800; color: white; animation: float 2s infinite ease-in-out;">Scanning
+            Assets...</div>
+        <div style="color: var(--color-text-muted);">Please wait while we detect available images</div>
+    </div>
+
+    <canvas id="confettiCanvas"></canvas>
+
+    <div class="container" id="mainContainer">
+        <div class="top-bar">
+            <div style="width: 40px;"></div> <!-- Spacer -->
+            <header>
+                <h1>ForRealScan</h1>
+                <p class="subtitle">Premium AI Detection Training</p>
+            </header>
+            <div class="lives-display" id="livesDisplay">❤️❤️❤️</div>
+            <button class="mute-btn" id="btnMute" title="Toggle Sound">
+                🔊
+            </button>
+        </div>
+
+        <!-- Start Screen -->
+        <div class="start-screen glass-panel" id="startScreen">
+            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem;">Select Mode</h2>
+            <button class="mode-btn mode-normal" id="btnModeNormal">
+                Normal
+                <span class="mode-desc">Standard training. No pressure.</span>
+            </button>
+            <button class="mode-btn mode-hardcore" id="btnModeHardcore">
+                💀 HARDCORE 💀
+                <span class="mode-desc">3 Lives. Double Points. Game Over.</span>
+            </button>
+        </div>
+
+        <div id="gameUI" style="display: none; width: 100%;">
+            <div class="status-bars">
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="timer-container">
+                    <div class="timer-bar" id="timerBar"></div>
+                </div>
+            </div>
+
+            <div class="score-panel glass-panel">
+                <div class="score-item">
+                    <span class="score-label">Score</span>
+                    <span class="score-value" id="scoreDisplay">0</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">Streak</span>
+                    <span class="score-value"><span id="streakDisplay">0</span> <span class="multiplier"
+                            id="multiplierDisplay">x1.0</span></span>
+                </div>
+            </div>
+
+            <!-- Game Card -->
+            <main class="card glass-panel" id="gameCard">
+                <div class="image-frame">
+                    <img src="" alt="Guess if this is real or AI" class="game-image" id="gameImage">
+                </div>
+
+                <div class="controls" id="guessControls">
+                    <button class="btn btn-real" id="btnReal">Real</button>
+                    <button class="btn btn-ai" id="btnAi">AI</button>
+                </div>
+
+                <div class="feedback-area" id="feedbackArea" aria-live="polite">
+                    <div class="feedback-title" id="feedbackTitle"></div>
+                    <div class="points-gained" id="pointsGained"></div>
+                    <button class="btn btn-next" id="btnNext">Next Image</button>
+                </div>
+            </main>
+        </div>
+
+        <!-- Results View -->
+        <div class="card glass-panel results-view" id="resultsCard">
+            <div class="score-circle" id="finalScoreCircle">
+                <div class="score-circle-content">
+                    <span class="final-points" id="finalScoreValue">0</span>
+                    <span class="final-percent" id="finalPercentValue">0%</span>
+                </div>
+            </div>
+
+            <div style="width: 100%;">
+                <div class="results-msg" id="resultsTitle"></div>
+                <p class="subtitle" style="text-align: center; margin-bottom: 1.5rem;">
+                    You identified <span id="correctCount">0</span> out of <span id="totalCount">30</span> images
+                    correctly.
+                </p>
+
+                <!-- Stats Breakdown -->
+                <div class="stats-container">
+                    <div class="stat-box">
+                        <div class="stat-label" style="color: var(--color-real);">Real</div>
+                        <div class="stat-value" id="statReal">0 / 15</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label" style="color: var(--color-ai);">AI</div>
+                        <div class="stat-value" id="statAi">0 / 15</div>
+                    </div>
+                </div>
+
+                <button class="btn-share" id="btnShare">
+                    📋 Share Result
+                </button>
+
+                <!-- Highscore Section -->
+                <div class="highscore-section">
+                    <div class="highscore-title">Best Runs (Points)</div>
+
+                    <div class="highscore-input-area" id="highscoreInputArea">
+                        <p style="text-align: center; font-size: 0.9rem; margin-bottom: 0.5rem;">New Highscore! Enter
+                            Name:</p>
+                        <input type="text" id="playerNameInput" class="highscore-input" placeholder="Your Name"
+                            maxlength="12">
+                        <button class="btn-save" id="btnSaveScore">Save Score</button>
+                    </div>
+
+                    <ul class="highscore-list" id="highscoreList">
+                        <!-- List items will be injected here -->
+                    </ul>
+                    <button class="btn-reset-score" id="btnResetScore">Reset Highscores</button>
+                </div>
+            </div>
+
+            <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                <button class="btn btn-real" id="btnRestart" style="width: 100%; max-width: 300px;">Play Again</button>
+                <p
+                    style="text-align: center; color: var(--color-text-muted); font-size: 0.85rem; margin-top: 1.5rem; max-width: 400px; line-height: 1.5; opacity: 0.8;">
+                    Nice run! Remember: this is just training. For real checks on viral posts, screenshots or important
+                    photos, use ForRealScan.
+                </p>
+
+                <a href="https://forrealscan.com" target="_blank" class="btn btn-real"
+                    style="width: 100%; max-width: 300px; margin-top: 1.5rem; text-decoration: none; display: flex; align-items: center; justify-content: center; z-index: 10; position: relative; text-align: center;">
+                    Open ForRealScan – scan a real image
+                </a>
+
+                <a href="https://forrealscan.com" target="_blank"
+                    style="color: var(--color-text-muted); font-size: 0.85rem; margin-top: 1rem; text-decoration: underline; opacity: 0.8; z-index: 10; position: relative;">
+                    Learn more about ForRealScan
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Game Data ---
+        let images = [];
+        let unusedImages = []; // Pool of images not yet shown
+        const MAX_IMAGE_CHECK = 60; // Check up to 60 images of each type
+
+        // --- Dynamic Image Discovery ---
+        async function discoverImages() {
+            const checkImage = (src, label) => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => resolve({ src, label, exists: true });
+                    img.onerror = () => resolve({ src, label, exists: false });
+                    img.src = src;
+                });
+            };
+
+            const promises = [];
+
+            // Check Real Images (001 to MAX)
+            for (let i = 1; i <= MAX_IMAGE_CHECK; i++) {
+                const num = i.toString().padStart(3, '0');
+                promises.push(checkImage(`imageReal${num}.jpg`, 'real'));
+            }
+
+            // Check AI Images (001 to MAX)
+            for (let i = 1; i <= MAX_IMAGE_CHECK; i++) {
+                const num = i.toString().padStart(3, '0');
+                promises.push(checkImage(`imageai${num}.jpg`, 'ai'));
+            }
+
+            // Wait for all checks
+            const results = await Promise.all(promises);
+            images = results.filter(r => r.exists).map(r => ({ src: r.src, label: r.label }));
+
+            // Initialize pool
+            unusedImages = [...images];
+
+            console.log(`Discovered ${images.length} images.`);
+
+            // Update UI
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'flex';
+        }
+
+        // --- Audio System ---
+        const AudioSys = {
+            ctx: null,
+            muted: false,
+
+            init: function () {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+
+            playTone: function (freq, type, duration, vol = 0.1) {
+                if (this.muted || !this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            },
+
+            playCorrect: function () {
+                this.playTone(600, 'sine', 0.1);
+                setTimeout(() => this.playTone(1200, 'sine', 0.2), 100);
+            },
+
+            playWrong: function () {
+                this.playTone(150, 'sawtooth', 0.3);
+            },
+
+            playTick: function () {
+                this.playTone(800, 'square', 0.05, 0.05);
+            },
+
+            playFanfare: function () {
+                const now = this.ctx.currentTime;
+                [400, 500, 600, 800].forEach((f, i) => {
+                    setTimeout(() => this.playTone(f, 'triangle', 0.4), i * 150);
+                });
+            },
+
+            playGodMode: function () {
+                const now = this.ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98, 2093.00]; // C Major Arpeggio
+                notes.forEach((f, i) => {
+                    setTimeout(() => this.playTone(f, 'sine', 0.6, 0.3), i * 100);
+                });
+            },
+
+            playGameOver: function () {
+                this.playTone(300, 'sawtooth', 0.4);
+                setTimeout(() => this.playTone(200, 'sawtooth', 0.4), 300);
+                setTimeout(() => this.playTone(100, 'sawtooth', 0.8), 600);
+            }
+        };
+
+        // --- Confetti System ---
+        const Confetti = {
+            canvas: document.getElementById('confettiCanvas'),
+            ctx: document.getElementById('confettiCanvas').getContext('2d'),
+            particles: [],
+            active: false,
+
+            resize: function () {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            },
+
+            start: function () {
+                this.resize();
+                this.active = true;
+                this.particles = [];
+                for (let i = 0; i < 150; i++) {
+                    this.particles.push({
+                        x: window.innerWidth / 2,
+                        y: window.innerHeight / 2,
+                        vx: (Math.random() - 0.5) * 20,
+                        vy: (Math.random() - 0.5) * 20 - 5,
+                        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                        size: Math.random() * 8 + 4,
+                        life: 100
+                    });
+                }
+                this.animate();
+            },
+
+            animate: function () {
+                if (!this.active) return;
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                let alive = false;
+
+                this.particles.forEach(p => {
+                    if (p.life > 0) {
+                        alive = true;
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.vy += 0.5; // Gravity
+                        p.life--;
+                        this.ctx.fillStyle = p.color;
+                        this.ctx.fillRect(p.x, p.y, p.size, p.size);
+                    }
+                });
+
+                if (alive) requestAnimationFrame(() => this.animate());
+                else this.active = false;
+            }
+        };
+
+        // --- State ---
+        let shuffledImages = [];
+        let currentIndex = 0;
+        let totalScore = 0; // Points
+        let correctCount = 0;
+        let streak = 0;
+        let realCorrect = 0;
+        let aiCorrect = 0;
+        let timerInterval = null;
+        let timeLeft = 15;
+        const TIME_PER_ROUND = 15;
+
+        // Hardcore State
+        let gameMode = 'normal'; // 'normal' | 'hardcore'
+        let lives = 3;
+
+        // --- Elements ---
+        const els = {
+            mainContainer: document.getElementById('mainContainer'),
+            startScreen: document.getElementById('startScreen'),
+            gameUI: document.getElementById('gameUI'),
+            livesDisplay: document.getElementById('livesDisplay'),
+            score: document.getElementById('scoreDisplay'),
+            streak: document.getElementById('streakDisplay'),
+            multiplier: document.getElementById('multiplierDisplay'),
+            card: document.getElementById('gameCard'),
+            image: document.getElementById('gameImage'),
+            progressBar: document.getElementById('progressBar'),
+            timerBar: document.getElementById('timerBar'),
+            btnReal: document.getElementById('btnReal'),
+            btnAi: document.getElementById('btnAi'),
+            feedbackArea: document.getElementById('feedbackArea'),
+            feedbackTitle: document.getElementById('feedbackTitle'),
+            pointsGained: document.getElementById('pointsGained'),
+            btnNext: document.getElementById('btnNext'),
+            resultsCard: document.getElementById('resultsCard'),
+            finalScoreCircle: document.getElementById('finalScoreCircle'),
+            finalScoreValue: document.getElementById('finalScoreValue'),
+            finalPercentValue: document.getElementById('finalPercentValue'),
+            resultsTitle: document.getElementById('resultsTitle'),
+            correctCount: document.getElementById('correctCount'),
+            totalCount: document.getElementById('totalCount'),
+            btnRestart: document.getElementById('btnRestart'),
+            btnMute: document.getElementById('btnMute'),
+            // Stats & Highscore
+            statReal: document.getElementById('statReal'),
+            statAi: document.getElementById('statAi'),
+            highscoreInputArea: document.getElementById('highscoreInputArea'),
+            playerNameInput: document.getElementById('playerNameInput'),
+            btnSaveScore: document.getElementById('btnSaveScore'),
+            highscoreList: document.getElementById('highscoreList'),
+            btnResetScore: document.getElementById('btnResetScore'),
+            btnShare: document.getElementById('btnShare'),
+            // Mode Select
+            btnModeNormal: document.getElementById('btnModeNormal'),
+            btnModeHardcore: document.getElementById('btnModeHardcore')
+        };
+
+        // --- Logic ---
+
+        function showStartScreen() {
+            els.startScreen.style.display = 'flex';
+            els.gameUI.style.display = 'none';
+            els.resultsCard.style.display = 'none';
+            els.livesDisplay.style.display = 'none';
+            document.body.classList.remove('perfect-run');
+        }
+
+        function initGame(mode) {
+            AudioSys.init();
+            gameMode = mode;
+            lives = 3;
+
+            // --- Balanced Shuffling Logic ---
+            const targetTotal = 25;
+            const half = Math.floor(targetTotal / 2);
+            // Randomly decide if Real or AI gets the extra one (e.g. 13 vs 12)
+            const realTarget = Math.random() > 0.5 ? half + 1 : half;
+            const aiTarget = targetTotal - realTarget;
+
+            // Separate unused images by type
+            let realPool = unusedImages.filter(img => img.label === 'real');
+            let aiPool = unusedImages.filter(img => img.label === 'ai');
+
+            // Refill pools if necessary
+            if (realPool.length < realTarget) {
+                console.log('Refilling Real image pool...');
+                // Reset Real pool to all available Real images
+                realPool = images.filter(img => img.label === 'real');
+            }
+
+            if (aiPool.length < aiTarget) {
+                console.log('Refilling AI image pool...');
+                // Reset AI pool to all available AI images
+                aiPool = images.filter(img => img.label === 'ai');
+            }
+
+            // Shuffle helper
+            const shuffle = (arr) => {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            };
+
+            // Shuffle separate pools
+            realPool = shuffle(realPool);
+            aiPool = shuffle(aiPool);
+
+            // Select images
+            const selectedReal = realPool.slice(0, realTarget);
+            const selectedAi = aiPool.slice(0, aiTarget);
+
+            // Update unusedImages with what's left
+            const remainingReal = realPool.slice(realTarget);
+            const remainingAi = aiPool.slice(aiTarget);
+            unusedImages = [...remainingReal, ...remainingAi];
+
+            // Combine and final shuffle for the game
+            shuffledImages = shuffle([...selectedReal, ...selectedAi]);
+
+            console.log(`Round started with ${shuffledImages.length} images (${selectedReal.length} Real, ${selectedAi.length} AI). Remaining in pool: ${unusedImages.length}`);
+
+            currentIndex = 0;
+            totalScore = 0;
+            correctCount = 0;
+            streak = 0;
+            realCorrect = 0;
+            aiCorrect = 0;
+
+            els.startScreen.style.display = 'none';
+            els.gameUI.style.display = 'block';
+            els.resultsCard.style.display = 'none';
+            els.card.style.display = 'block';
+
+            if (gameMode === 'hardcore') {
+                els.livesDisplay.style.display = 'block';
+                updateLives();
+            } else {
+                els.livesDisplay.style.display = 'none';
+            }
+
+            updateScorePanel();
+            loadNextImage();
+        }
+
+        function updateLives() {
+            let hearts = '';
+            for (let i = 0; i < lives; i++) hearts += '❤️';
+            els.livesDisplay.textContent = hearts;
+        }
+
+        function updateScorePanel() {
+            els.score.textContent = totalScore.toLocaleString();
+
+            // Combo Visuals
+            els.streak.textContent = streak;
+            els.streak.className = ''; // Reset
+            if (streak >= 20) els.streak.className = 'combo-blue-fire';
+            else if (streak >= 10) els.streak.className = 'combo-fire';
+            else if (streak >= 5) els.streak.className = 'combo-glow';
+
+            let mult = 1 + (Math.min(streak, 20) * 0.1);
+            if (gameMode === 'hardcore') mult *= 2; // Double points in Hardcore
+
+            els.multiplier.textContent = `x${mult.toFixed(1)}`;
+
+            const progress = ((currentIndex) / shuffledImages.length) * 100;
+            els.progressBar.style.width = `${progress}%`;
+        }
+
+        function startTimer() {
+            timeLeft = TIME_PER_ROUND;
+            els.timerBar.style.width = '100%';
+            els.timerBar.style.backgroundColor = '#10b981';
+
+            if (timerInterval) clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.1;
+                const pct = (timeLeft / TIME_PER_ROUND) * 100;
+                els.timerBar.style.width = `${pct}%`;
+
+                if (pct < 30) els.timerBar.style.backgroundColor = '#ef4444';
+                else if (pct < 60) els.timerBar.style.backgroundColor = '#f59e0b';
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleGuess('TIMEOUT');
+                }
+            }, 100);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function loadNextImage() {
+            const imgData = shuffledImages[currentIndex];
+
+            // Fade out old image
+            els.image.classList.add('fade-out');
+
+            setTimeout(() => {
+                els.image.src = imgData.src;
+
+                // Robust loading
+                els.image.onerror = function () {
+                    const currentSrc = this.src;
+                    const base = currentSrc.substring(0, currentSrc.lastIndexOf('.'));
+                    const ext = currentSrc.substring(currentSrc.lastIndexOf('.') + 1).toLowerCase();
+                    this.onerror = null;
+                    if (ext === 'png') this.src = base + '.jpg';
+                    else if (ext === 'jpg') {
+                        this.src = base + '.jpeg';
+                        this.onerror = function () { this.onerror = null; this.src = base + '.png'; }
+                    } else this.src = base + '.png';
+                };
+
+                els.image.onload = () => {
+                    els.image.classList.remove('fade-out');
+                    startTimer(); // Start timer when image loads
+                };
+                if (els.image.complete && els.image.naturalWidth > 0) {
+                    els.image.classList.remove('fade-out');
+                    startTimer();
+                }
+            }, 300);
+
+            updateScorePanel();
+
+            // Reset UI
+            els.feedbackArea.classList.remove('visible');
+            els.btnNext.style.display = 'none';
+            els.pointsGained.textContent = '';
+
+            els.btnReal.disabled = false;
+            els.btnAi.disabled = false;
+            els.btnReal.focus();
+        }
+
+        function triggerShake() {
+            els.mainContainer.classList.add('shake-effect');
+            setTimeout(() => els.mainContainer.classList.remove('shake-effect'), 500);
+        }
+
+        function handleGuess(guess) {
+            stopTimer();
+            const currentImg = shuffledImages[currentIndex];
+            const isCorrect = guess === currentImg.label;
+
+            els.btnReal.disabled = true;
+            els.btnAi.disabled = true;
+
+            if (isCorrect) {
+                // Calc Points
+                const basePoints = 1000;
+                const timeBonus = Math.max(0, Math.floor((timeLeft / TIME_PER_ROUND) * 500));
+                let multiplier = 1 + (Math.min(streak, 20) * 0.1);
+                if (gameMode === 'hardcore') multiplier *= 2;
+
+                const roundPoints = Math.floor((basePoints + timeBonus) * multiplier);
+
+                totalScore += roundPoints;
+                correctCount++;
+                streak++;
+                if (currentImg.label === 'real') realCorrect++;
+                if (currentImg.label === 'ai') aiCorrect++;
+
+                els.feedbackTitle.textContent = 'Correct!';
+                els.feedbackTitle.style.color = 'var(--color-real)';
+                els.pointsGained.textContent = `+${roundPoints} pts (Time: ${timeLeft.toFixed(1)}s)`;
+                AudioSys.playCorrect();
+            } else {
+                streak = 0;
+                els.feedbackTitle.textContent = guess === 'TIMEOUT' ? 'Time Up!' : 'Wrong!';
+                els.feedbackTitle.style.color = '#ef4444';
+                els.pointsGained.textContent = `+0 pts`;
+                AudioSys.playWrong();
+                triggerShake(); // SHAKE IT!
+
+                if (gameMode === 'hardcore') {
+                    lives--;
+                    updateLives();
+                    if (lives <= 0) {
+                        setTimeout(() => showResults(true), 1000); // Game Over
+                        return;
+                    }
+                }
+            }
+
+            els.feedbackArea.classList.add('visible');
+
+            const isLast = currentIndex === shuffledImages.length - 1;
+            els.btnNext.textContent = isLast ? 'Show Results' : 'Next Image';
+            els.btnNext.style.display = 'block';
+            els.btnNext.focus();
+
+            const progress = ((currentIndex + 1) / shuffledImages.length) * 100;
+            els.progressBar.style.width = `${progress}%`;
+            updateScorePanel();
+        }
+
+        function showResults(isGameOver = false) {
+            els.gameUI.style.display = 'none';
+            els.resultsCard.style.display = 'flex';
+
+            els.correctCount.textContent = correctCount;
+            els.totalCount.textContent = shuffledImages.length;
+
+            const percentage = Math.round((correctCount / shuffledImages.length) * 100);
+            els.finalScoreValue.textContent = totalScore.toLocaleString();
+            els.finalPercentValue.textContent = `${percentage}% Accuracy`;
+
+            els.finalScoreCircle.style.background = `conic-gradient(var(--color-real) ${percentage}%, #1e293b ${percentage}%)`;
+
+            if (isGameOver) {
+                els.resultsTitle.textContent = "GAME OVER 💀";
+                els.resultsTitle.style.color = "#ef4444";
+                AudioSys.playGameOver();
+            } else {
+                els.resultsTitle.style.color = "#fff";
+                // Perfect Run Logic
+                if (percentage === 100) {
+                    document.body.classList.add('perfect-run');
+                    els.resultsTitle.textContent = "GODLIKE! PERFECT RUN! 🏆";
+                    AudioSys.playGodMode();
+                    Confetti.start();
+                } else {
+                    AudioSys.playFanfare();
+                    if (percentage <= 30) {
+                        els.resultsTitle.textContent = "Keep Training!";
+                    } else if (percentage <= 70) {
+                        els.resultsTitle.textContent = "Sharp Eye!";
+                    } else {
+                        els.resultsTitle.textContent = "Master Detective! 🔥";
+                    }
+                }
+            }
+
+            const totalReal = shuffledImages.filter(img => img.label === 'real').length;
+            const totalAi = shuffledImages.filter(img => img.label === 'ai').length;
+
+            els.statReal.textContent = `${realCorrect} / ${totalReal}`;
+            els.statAi.textContent = `${aiCorrect} / ${totalAi}`;
+
+            renderHighscores();
+            checkHighscore(totalScore);
+        }
+
+        // --- Highscore Functions ---
+        const HS_KEY = 'forRealScan_highscores_v3'; // V3 for Hardcore
+
+        function getHighscores() {
+            const stored = localStorage.getItem(HS_KEY);
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function renderHighscores() {
+            const scores = getHighscores();
+            els.highscoreList.innerHTML = scores.map(s => `
+                <li class="highscore-item">
+                    <span class="highscore-name">${s.name} ${s.mode === 'hardcore' ? '💀' : ''}</span>
+                    <span class="highscore-score">${s.score.toLocaleString()} pts</span>
+                </li>
+            `).join('');
+
+            if (scores.length === 0) {
+                els.highscoreList.innerHTML = '<li style="text-align:center; color:rgba(255,255,255,0.3); padding:0.5rem;">No scores yet</li>';
+            }
+        }
+
+        function checkHighscore(currentPoints) {
+            const scores = getHighscores();
+            if (currentPoints > 0 && (scores.length < 10 || currentPoints > scores[scores.length - 1].score)) {
+                els.highscoreInputArea.style.display = 'flex';
+                els.playerNameInput.value = '';
+                els.playerNameInput.focus();
+                Confetti.start(); // Confetti also for Highscore!
+            } else {
+                els.highscoreInputArea.style.display = 'none';
+            }
+        }
+
+        function saveHighscore() {
+            const name = els.playerNameInput.value.trim() || 'Anonymous';
+            const date = new Date().toISOString().split('T')[0];
+
+            const newEntry = { name, score: totalScore, date, mode: gameMode };
+            const scores = getHighscores();
+
+            scores.push(newEntry);
+            scores.sort((a, b) => b.score - a.score);
+            const top10 = scores.slice(0, 10);
+
+            localStorage.setItem(HS_KEY, JSON.stringify(top10));
+
+            renderHighscores();
+            els.highscoreInputArea.style.display = 'none';
+        }
+
+        // --- Input Handling ---
+        document.addEventListener('keydown', (e) => {
+            if (els.gameUI.style.display === 'none') return; // Only in game
+            if (els.btnReal.disabled) {
+                // If waiting for next
+                if ((e.key === 'Enter' || e.key === ' ') && els.btnNext.style.display === 'block') {
+                    els.btnNext.click();
+                }
+                return;
+            }
+
+            if (e.key === 'ArrowLeft') handleGuess('real');
+            if (e.key === 'ArrowRight') handleGuess('ai');
+        });
+
+        els.btnReal.addEventListener('click', () => handleGuess('real'));
+        els.btnAi.addEventListener('click', () => handleGuess('ai'));
+
+        els.btnNext.addEventListener('click', () => {
+            if (currentIndex < shuffledImages.length - 1) {
+                currentIndex++;
+                loadNextImage();
+            } else {
+                showResults();
+            }
+        });
+
+        els.btnRestart.addEventListener('click', showStartScreen);
+        els.btnSaveScore.addEventListener('click', saveHighscore);
+
+        els.btnResetScore.addEventListener('click', () => {
+            if (confirm('Are you sure you want to delete all highscores?')) {
+                localStorage.removeItem(HS_KEY);
+                renderHighscores();
+            }
+        });
+
+        els.btnMute.addEventListener('click', () => {
+            AudioSys.muted = !AudioSys.muted;
+            els.btnMute.textContent = AudioSys.muted ? '🔇' : '🔊';
+            els.btnMute.style.opacity = AudioSys.muted ? '0.5' : '1';
+        });
+
+        els.btnShare.addEventListener('click', () => {
+            const text = `I scored ${totalScore.toLocaleString()} pts (${correctCount}/30) in ForRealScan! 🦅 Can you beat me?`;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = els.btnShare.textContent;
+                els.btnShare.textContent = '✅ Copied!';
+                setTimeout(() => els.btnShare.textContent = originalText, 2000);
+            });
+        });
+
+        // Mode Selection
+        els.btnModeNormal.addEventListener('click', () => initGame('normal'));
+        els.btnModeHardcore.addEventListener('click', () => initGame('hardcore'));
+
+        // Start Discovery
+        document.getElementById('startScreen').style.display = 'none'; // Hide start screen initially
+        discoverImages();
+
+    </script>
+</body>
+
+</html>
