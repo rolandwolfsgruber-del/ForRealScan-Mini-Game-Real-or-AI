@@ -441,6 +441,13 @@
             justify-content: center;
         }
 
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: inherit;
+        }
+
         /* Placeholder for Development */
         .placeholder {
             width: 100%;
@@ -2661,6 +2668,15 @@
         };
 
         // ═══════════════════════════════════════════════════════════
+        // IMAGE POOL - Real and AI Images
+        // ═══════════════════════════════════════════════════════════
+
+        const IMAGE_POOL = {
+            real: Array.from({length: 148}, (_, i) => `imageReal${String(i + 1).padStart(3, '0')}.jpg`),
+            ai: Array.from({length: 255}, (_, i) => `imageai${String(i + 1).padStart(3, '0')}.jpg`)
+        };
+
+        // ═══════════════════════════════════════════════════════════
         // PHASE 3: SOUND ENGINE
         // ═══════════════════════════════════════════════════════════
 
@@ -3290,25 +3306,28 @@
         }
 
         function generateCards(pairCount) {
-            const cardData = [];
-
-            // Erstelle Paare (halb Real, halb AI)
             const realCount = Math.ceil(pairCount / 2);
             const aiCount = pairCount - realCount;
 
-            // Real-Karten
-            for (let i = 0; i < realCount; i++) {
-                const pairId = `real-${i + 1}`;
-                cardData.push({ pairId, type: 'real', index: i + 1 });
-                cardData.push({ pairId, type: 'real', index: i + 1 });
-            }
+            // Zufällige Bilder aus dem Pool auswählen
+            const shuffledReal = shuffleArray([...IMAGE_POOL.real]).slice(0, realCount);
+            const shuffledAi = shuffleArray([...IMAGE_POOL.ai]).slice(0, aiCount);
 
-            // AI-Karten
-            for (let i = 0; i < aiCount; i++) {
-                const pairId = `ai-${i + 1}`;
-                cardData.push({ pairId, type: 'ai', index: i + 1 });
-                cardData.push({ pairId, type: 'ai', index: i + 1 });
-            }
+            const cardData = [];
+
+            // Real-Paare mit echten Bildern
+            shuffledReal.forEach((src, i) => {
+                const pairId = `real-${i}`;
+                cardData.push({ pairId, type: 'real', src });
+                cardData.push({ pairId, type: 'real', src });
+            });
+
+            // AI-Paare mit echten Bildern
+            shuffledAi.forEach((src, i) => {
+                const pairId = `ai-${i}`;
+                cardData.push({ pairId, type: 'ai', src });
+                cardData.push({ pairId, type: 'ai', src });
+            });
 
             // Shuffle
             return shuffleArray(cardData);
@@ -3337,25 +3356,15 @@
             const container = document.createElement('div');
             container.className = 'card-container';
 
-            const isReal = card.type === 'real';
-            const bgColor = isReal
-                ? 'linear-gradient(135deg, #1a4d2e, #0d2818)'
-                : 'linear-gradient(135deg, #1e3a5f, #0f1d30)';
-            const icon = isReal ? '🦉' : '🤖';
-            const label = isReal ? `REAL ${card.index}` : `AI ${card.index}`;
-
             container.innerHTML = `
-                <div class="memory-card" data-index="${index}" data-pair-id="${card.pairId}" data-type="${card.type}">
+                <div class="memory-card" data-index="${index}" data-pair-id="${card.pairId}" data-type="${card.type}" data-src="${card.src}">
                     <div class="card-inner">
                         <div class="card-back">
                             <div class="card-pattern"></div>
                             <span class="card-logo">?</span>
                         </div>
-                        <div class="card-front" style="background: ${bgColor};">
-                            <div class="placeholder">
-                                <span class="placeholder-icon">${icon}</span>
-                                <span class="placeholder-text">${label}</span>
-                            </div>
+                        <div class="card-front">
+                            <img src="${card.src}" alt="${card.type === 'real' ? 'Real' : 'AI'} Image" loading="lazy">
                         </div>
                     </div>
                 </div>
@@ -3422,7 +3431,7 @@
                 const cardData = cards.find(c => c.pairId === card1.dataset.pairId);
                 currentMatchedPair = {
                     type: card1.dataset.type,  // 'real' oder 'ai'
-                    index: cardData ? cardData.index : 1,
+                    src: card1.dataset.src,    // Bild-URL
                     card1: card1,
                     card2: card2
                 };
@@ -3474,20 +3483,8 @@
             const pair = currentMatchedPair;
             if (!pair) return;
 
-            // Update Modal Image (Placeholder für jetzt)
-            const isReal = pair.type === 'real';
-            const bgColor = isReal
-                ? 'linear-gradient(135deg, #1a4d2e, #0d2818)'
-                : 'linear-gradient(135deg, #1e3a5f, #0f1d30)';
-            const icon = isReal ? '🦉' : '🤖';
-            const label = isReal ? `REAL ${pair.index}` : `AI ${pair.index}`;
-
-            sortEls.image.innerHTML = `
-                <div class="placeholder" style="background: ${bgColor};">
-                    <span class="placeholder-icon">${icon}</span>
-                    <span class="placeholder-text">${label}</span>
-                </div>
-            `;
+            // Update Modal Image mit echtem Bild
+            sortEls.image.innerHTML = `<img src="${pair.src}" alt="${pair.type === 'real' ? 'Real' : 'AI'} Image">`;
 
             // Reset Buttons
             sortEls.btnReal.classList.remove('correct', 'wrong', 'disabled');
