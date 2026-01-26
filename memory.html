@@ -653,6 +653,879 @@
                 font-size: 1.25rem;
             }
         }
+
+        /* ═══════════════════════════════════════════════════════════
+           PHASE 2: GAME TIMER
+           ═══════════════════════════════════════════════════════════ */
+
+        .game-timer-container {
+            width: 100%;
+            max-width: 600px;
+            padding: 0 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-timer-bar-bg {
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .game-timer-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--veritas), var(--robo));
+            border-radius: 2px;
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        .game-timer-bar.warning {
+            background: var(--color-warning);
+        }
+
+        .game-timer-bar.critical {
+            background: var(--color-error);
+            animation: timer-pulse 0.5s infinite;
+        }
+
+        @keyframes timer-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           PHASE 2: SORT BOXES CONTAINER
+           ═══════════════════════════════════════════════════════════ */
+
+        .sort-boxes-container {
+            padding: 1rem;
+            margin-top: auto;
+        }
+
+        .sort-boxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .game-sort-box {
+            position: relative;
+            padding: 1rem;
+            border-radius: var(--radius-xl);
+            border: 2px solid transparent;
+            background: var(--glass-bg);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s var(--ease-smooth);
+            overflow: hidden;
+        }
+
+        /* Glow-Hintergrund */
+        .box-glow {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: inherit;
+        }
+
+        /* ═══ VERITAS BOX ═══ */
+        .sort-box-veritas {
+            border-color: rgba(34, 197, 94, 0.25);
+        }
+
+        .sort-box-veritas .box-glow {
+            background: radial-gradient(ellipse at bottom, var(--veritas-glow) 0%, transparent 70%);
+        }
+
+        .sort-box-veritas .box-icon {
+            color: var(--veritas-light);
+        }
+
+        .sort-box-veritas .box-label {
+            color: var(--veritas);
+        }
+
+        /* ═══ ROBO BOX ═══ */
+        .sort-box-robo {
+            border-color: rgba(59, 130, 246, 0.25);
+        }
+
+        .sort-box-robo .box-glow {
+            background: radial-gradient(ellipse at bottom, var(--robo-glow) 0%, transparent 70%);
+        }
+
+        .sort-box-robo .box-icon {
+            color: var(--robo-light);
+        }
+
+        .sort-box-robo .box-label {
+            color: var(--robo);
+        }
+
+        /* ═══ BOX CONTENT ═══ */
+        .box-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .box-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s var(--ease-bounce);
+        }
+
+        .box-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+        }
+
+        .box-counter {
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .counter-current {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            transition: all 0.3s var(--ease-bounce);
+        }
+
+        .counter-separator,
+        .counter-total {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        /* ═══ BOX STATES ═══ */
+
+        /* Receiving Animation (wenn Karte einfliegt) */
+        .game-sort-box.receiving {
+            animation: box-receive 0.4s var(--ease-bounce);
+        }
+
+        @keyframes box-receive {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.05); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        .game-sort-box.receiving .box-glow {
+            opacity: 0.3;
+        }
+
+        .game-sort-box.receiving .box-icon {
+            transform: scale(1.2);
+        }
+
+        /* Counter Bump */
+        .counter-current.bump {
+            animation: counter-bump 0.4s var(--ease-bounce);
+        }
+
+        @keyframes counter-bump {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.4); color: var(--color-gold); }
+            100% { transform: scale(1); }
+        }
+
+        /* ═══ CARD STACK ═══ */
+        .box-stack {
+            display: flex;
+            justify-content: center;
+            margin-top: 0.5rem;
+            min-height: 24px;
+        }
+
+        .stack-mini-card {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--glass-border);
+            margin-left: -6px;
+            transition: all 0.3s var(--ease-bounce);
+            animation: stack-add 0.4s var(--ease-bounce);
+        }
+
+        .stack-mini-card:first-child {
+            margin-left: 0;
+        }
+
+        @keyframes stack-add {
+            0% { transform: scale(0) translateY(-20px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .sort-box-veritas .stack-mini-card {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(34, 197, 94, 0.1));
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .sort-box-robo .stack-mini-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.1));
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           PHASE 2: SORT MODAL OVERLAY
+           ═══════════════════════════════════════════════════════════ */
+
+        .sort-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 13, 26, 0.9);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 100;
+
+            /* Hidden by default */
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s var(--ease-smooth);
+        }
+
+        .sort-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           SORT MODAL CARD
+           ═══════════════════════════════════════════════════════════ */
+
+        .sort-modal {
+            background: linear-gradient(165deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-2xl);
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 380px;
+
+            /* Entry animation */
+            transform: scale(0.9) translateY(30px);
+            transition: transform 0.4s var(--ease-bounce);
+        }
+
+        .sort-modal-overlay.active .sort-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           MODAL HEADER
+           ═══════════════════════════════════════════════════════════ */
+
+        .sort-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .match-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--veritas), var(--veritas-light));
+            border-radius: var(--radius-lg);
+
+            /* Pop-in Animation */
+            animation: badge-pop 0.5s var(--ease-bounce);
+        }
+
+        @keyframes badge-pop {
+            0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+            60% { transform: scale(1.15) rotate(3deg); }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+
+        .match-icon {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .match-text {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .points-earned {
+            text-align: right;
+        }
+
+        .points-value {
+            display: block;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--color-gold);
+            text-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
+
+            /* Count-up ready */
+            font-variant-numeric: tabular-nums;
+
+            animation: points-pop 0.6s var(--ease-bounce) 0.2s both;
+        }
+
+        @keyframes points-pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            60% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .points-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           SORT IMAGE
+           ═══════════════════════════════════════════════════════════ */
+
+        .sort-image-container {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            margin-bottom: 1.25rem;
+        }
+
+        .sort-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-tertiary);
+        }
+
+        .sort-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Placeholder (bis echte Bilder da sind) */
+        .sort-image .placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .sort-image .placeholder-icon {
+            font-size: 4rem;
+        }
+
+        .sort-image .placeholder-text {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Scan-Effekt */
+        .scan-effect {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .scan-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--robo-light) 20%,
+                var(--robo) 50%,
+                var(--robo-light) 80%,
+                transparent 100%
+            );
+            box-shadow:
+                0 0 10px var(--robo-glow),
+                0 0 20px var(--robo-glow),
+                0 0 40px rgba(59, 130, 246, 0.3);
+            animation: scan-sweep 2s ease-in-out infinite;
+        }
+
+        @keyframes scan-sweep {
+            0% { top: -3px; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: calc(100% + 3px); opacity: 0; }
+        }
+
+        /* Subtiler Glow am Rand */
+        .image-glow {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow: inset 0 0 30px rgba(59, 130, 246, 0.1);
+            pointer-events: none;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           SORT QUESTION
+           ═══════════════════════════════════════════════════════════ */
+
+        .sort-question {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+        }
+
+        .question-icon {
+            font-size: 1.25rem;
+        }
+
+        .question-text {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           SORT BUTTONS
+           ═══════════════════════════════════════════════════════════ */
+
+        .sort-buttons {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 0.75rem;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .sort-btn-divider {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .sort-btn {
+            position: relative;
+            padding: 1.25rem 1rem;
+            border: 2px solid transparent;
+            border-radius: var(--radius-xl);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.25s var(--ease-smooth);
+            overflow: hidden;
+        }
+
+        .sort-btn-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .sort-btn-icon {
+            font-size: 2.5rem;
+            transition: transform 0.25s var(--ease-bounce);
+        }
+
+        .sort-btn-label {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .sort-btn-hint {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .sort-btn-hint kbd {
+            padding: 0.15rem 0.4rem;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.6rem;
+        }
+
+        /* Glow Background */
+        .sort-btn-glow {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            border-radius: inherit;
+        }
+
+        /* ═══ REAL BUTTON ═══ */
+        .sort-btn-real {
+            background: linear-gradient(145deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+            border-color: rgba(34, 197, 94, 0.3);
+            color: var(--veritas-light);
+        }
+
+        .sort-btn-real .sort-btn-glow {
+            background: radial-gradient(circle at center, var(--veritas-glow) 0%, transparent 70%);
+        }
+
+        .sort-btn-real:hover,
+        .sort-btn-real:focus {
+            border-color: var(--veritas);
+            transform: scale(1.03);
+            box-shadow: var(--shadow-veritas);
+        }
+
+        .sort-btn-real:hover .sort-btn-glow,
+        .sort-btn-real:focus .sort-btn-glow {
+            opacity: 0.15;
+        }
+
+        .sort-btn-real:hover .sort-btn-icon,
+        .sort-btn-real:focus .sort-btn-icon {
+            transform: scale(1.15) rotate(-5deg);
+        }
+
+        .sort-btn-real:active {
+            transform: scale(0.98);
+        }
+
+        /* ═══ AI BUTTON ═══ */
+        .sort-btn-ai {
+            background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+            border-color: rgba(59, 130, 246, 0.3);
+            color: var(--robo-light);
+        }
+
+        .sort-btn-ai .sort-btn-glow {
+            background: radial-gradient(circle at center, var(--robo-glow) 0%, transparent 70%);
+        }
+
+        .sort-btn-ai:hover,
+        .sort-btn-ai:focus {
+            border-color: var(--robo);
+            transform: scale(1.03);
+            box-shadow: var(--shadow-robo);
+        }
+
+        .sort-btn-ai:hover .sort-btn-glow,
+        .sort-btn-ai:focus .sort-btn-glow {
+            opacity: 0.15;
+        }
+
+        .sort-btn-ai:hover .sort-btn-icon,
+        .sort-btn-ai:focus .sort-btn-icon {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .sort-btn-ai:active {
+            transform: scale(0.98);
+        }
+
+        /* ═══ FEEDBACK STATES ═══ */
+        .sort-btn.correct {
+            background: var(--veritas) !important;
+            border-color: var(--veritas-light) !important;
+            color: white !important;
+            animation: btn-success 0.5s var(--ease-bounce);
+        }
+
+        @keyframes btn-success {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        .sort-btn.wrong {
+            background: var(--color-error) !important;
+            border-color: hsl(0, 84%, 70%) !important;
+            color: white !important;
+            animation: btn-error 0.5s var(--ease-smooth);
+        }
+
+        @keyframes btn-error {
+            0%, 100% { transform: translateX(0); }
+            15%, 45%, 75% { transform: translateX(-6px); }
+            30%, 60%, 90% { transform: translateX(6px); }
+        }
+
+        .sort-btn.disabled {
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           SORT TIMER
+           ═══════════════════════════════════════════════════════════ */
+
+        .sort-timer-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sort-timer-bar-bg {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .sort-timer-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--veritas), var(--robo));
+            border-radius: 3px;
+            transition: width 0.1s linear;
+            width: 100%;
+        }
+
+        .sort-timer-bar.warning {
+            background: var(--color-warning);
+        }
+
+        .sort-timer-bar.critical {
+            background: var(--color-error);
+            animation: timer-flash 0.3s ease-in-out infinite;
+        }
+
+        @keyframes timer-flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .sort-timer-text {
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            min-width: 2.5rem;
+            text-align: right;
+            color: var(--text-secondary);
+        }
+
+        .sort-timer-text.warning {
+            color: var(--color-warning);
+        }
+
+        .sort-timer-text.critical {
+            color: var(--color-error);
+            animation: text-shake 0.2s infinite;
+        }
+
+        @keyframes text-shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-1px); }
+            75% { transform: translateX(1px); }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           STREAK DISPLAY
+           ═══════════════════════════════════════════════════════════ */
+
+        .sort-streak {
+            display: none; /* Nur anzeigen wenn streak > 0 */
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(234, 179, 8, 0.05));
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            border-radius: var(--radius-lg);
+        }
+
+        .sort-streak.active {
+            display: flex;
+            animation: streak-appear 0.4s var(--ease-bounce);
+        }
+
+        @keyframes streak-appear {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .streak-fire {
+            font-size: 1.25rem;
+            animation: fire-dance 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes fire-dance {
+            0% { transform: rotate(-5deg) scale(1); }
+            100% { transform: rotate(5deg) scale(1.1); }
+        }
+
+        .streak-count {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--color-gold);
+            text-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+        }
+
+        .streak-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        /* Streak Stufen */
+        .sort-streak.fire .streak-fire {
+            animation: fire-intense 0.3s ease-in-out infinite alternate;
+        }
+
+        @keyframes fire-intense {
+            0% { transform: rotate(-8deg) scale(1); filter: brightness(1); }
+            100% { transform: rotate(8deg) scale(1.2); filter: brightness(1.2); }
+        }
+
+        .sort-streak.blue-fire .streak-fire::after {
+            content: '🔥';
+            position: absolute;
+            filter: hue-rotate(200deg);
+        }
+
+        .sort-streak.blue-fire .streak-count {
+            color: var(--robo-light);
+            text-shadow: 0 0 15px var(--robo-glow);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           SORT FEEDBACK TOAST
+           ═══════════════════════════════════════════════════════════ */
+
+        .sort-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            z-index: 150;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 2rem 3rem;
+
+            background: var(--bg-secondary);
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-2xl);
+
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s var(--ease-bounce);
+        }
+
+        .sort-feedback.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .sort-feedback.correct {
+            border-color: var(--veritas);
+            box-shadow: var(--shadow-veritas);
+        }
+
+        .sort-feedback.wrong {
+            border-color: var(--color-error);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+        }
+
+        .feedback-icon {
+            font-size: 3rem;
+            animation: icon-pop 0.4s var(--ease-bounce);
+        }
+
+        @keyframes icon-pop {
+            0% { transform: scale(0) rotate(-180deg); }
+            60% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        .sort-feedback.correct .feedback-icon {
+            color: var(--veritas);
+        }
+
+        .sort-feedback.wrong .feedback-icon {
+            color: var(--color-error);
+        }
+
+        .feedback-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .feedback-bonus {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--color-gold);
+            text-shadow: 0 0 15px rgba(234, 179, 8, 0.4);
+        }
+
+        .sort-feedback.wrong .feedback-bonus {
+            color: var(--text-muted);
+            text-shadow: none;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           PHASE 2: RESPONSIVE ADJUSTMENTS
+           ═══════════════════════════════════════════════════════════ */
+
+        @media (max-width: 640px) {
+            .sort-boxes {
+                gap: 0.75rem;
+            }
+
+            .game-sort-box {
+                padding: 0.75rem;
+            }
+
+            .box-icon {
+                font-size: 1.25rem;
+            }
+
+            .counter-current {
+                font-size: 1.5rem;
+            }
+
+            .sort-modal {
+                padding: 1.25rem;
+            }
+
+            .sort-btn-icon {
+                font-size: 2rem;
+            }
+
+            .sort-btn {
+                padding: 1rem 0.75rem;
+            }
+        }
     </style>
 </head>
 
@@ -710,11 +1583,144 @@
             </div>
         </header>
 
+        <!-- Game Timer (Phase 2) -->
+        <div class="game-timer-container">
+            <div class="game-timer-bar-bg">
+                <div class="game-timer-bar" id="gameTimerBar"></div>
+            </div>
+        </div>
+
         <div class="grid-container">
             <div class="memory-grid" id="memoryGrid" data-difficulty="medium">
                 <!-- Cards will be generated by JavaScript -->
             </div>
         </div>
+
+        <!-- Sort Boxes (Phase 2) -->
+        <div class="sort-boxes-container">
+            <div class="sort-boxes">
+                <!-- Veritas Box -->
+                <div class="game-sort-box sort-box-veritas" data-type="real">
+                    <div class="box-glow"></div>
+                    <div class="box-header">
+                        <span class="box-icon">🦉</span>
+                        <span class="box-label">REAL</span>
+                    </div>
+                    <div class="box-counter">
+                        <span class="counter-current" id="realCount">0</span>
+                        <span class="counter-separator">/</span>
+                        <span class="counter-total" id="realTotal">4</span>
+                    </div>
+                    <div class="box-stack" id="realStack">
+                        <!-- Gestapelte Mini-Karten werden hier eingefügt -->
+                    </div>
+                </div>
+
+                <!-- Robo Box -->
+                <div class="game-sort-box sort-box-robo" data-type="ai">
+                    <div class="box-glow"></div>
+                    <div class="box-header">
+                        <span class="box-icon">🤖</span>
+                        <span class="box-label">KI</span>
+                    </div>
+                    <div class="box-counter">
+                        <span class="counter-current" id="aiCount">0</span>
+                        <span class="counter-separator">/</span>
+                        <span class="counter-total" id="aiTotal">4</span>
+                    </div>
+                    <div class="box-stack" id="aiStack">
+                        <!-- Gestapelte Mini-Karten werden hier eingefügt -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SORT MODAL (Phase 2)
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="sort-modal-overlay" id="sortModal">
+        <div class="sort-modal">
+            <!-- Header mit Match-Feedback -->
+            <div class="sort-modal-header">
+                <div class="match-badge">
+                    <span class="match-icon">✓</span>
+                    <span class="match-text">MATCH!</span>
+                </div>
+                <div class="points-earned">
+                    <span class="points-value">+500</span>
+                    <span class="points-label">Punkte</span>
+                </div>
+            </div>
+
+            <!-- Bild-Anzeige -->
+            <div class="sort-image-container">
+                <div class="sort-image" id="sortImage">
+                    <!-- Placeholder oder Bild wird via JS eingefügt -->
+                </div>
+                <div class="scan-effect">
+                    <div class="scan-line"></div>
+                </div>
+                <div class="image-glow"></div>
+            </div>
+
+            <!-- Frage -->
+            <div class="sort-question">
+                <span class="question-icon">🔍</span>
+                <span class="question-text">Echtes Foto oder KI-generiert?</span>
+            </div>
+
+            <!-- Buttons -->
+            <div class="sort-buttons">
+                <button class="sort-btn sort-btn-real" id="btnSortReal" data-choice="real">
+                    <div class="sort-btn-glow"></div>
+                    <div class="sort-btn-content">
+                        <span class="sort-btn-icon">🦉</span>
+                        <span class="sort-btn-label">REAL</span>
+                        <span class="sort-btn-hint">
+                            <kbd>←</kbd> oder <kbd>A</kbd>
+                        </span>
+                    </div>
+                </button>
+
+                <div class="sort-btn-divider">
+                    <span>oder</span>
+                </div>
+
+                <button class="sort-btn sort-btn-ai" id="btnSortAi" data-choice="ai">
+                    <div class="sort-btn-glow"></div>
+                    <div class="sort-btn-content">
+                        <span class="sort-btn-icon">🤖</span>
+                        <span class="sort-btn-label">KI</span>
+                        <span class="sort-btn-hint">
+                            <kbd>→</kbd> oder <kbd>D</kbd>
+                        </span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Sort Timer -->
+            <div class="sort-timer-container">
+                <div class="sort-timer-bar-bg">
+                    <div class="sort-timer-bar" id="sortTimerBar"></div>
+                </div>
+                <div class="sort-timer-text" id="sortTimerText">7s</div>
+            </div>
+
+            <!-- Streak-Anzeige -->
+            <div class="sort-streak" id="sortStreak">
+                <span class="streak-fire">🔥</span>
+                <span class="streak-count">5</span>
+                <span class="streak-label">Serie</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sort Feedback (erscheint nach Auswahl) -->
+    <div class="sort-feedback" id="sortFeedback">
+        <div class="feedback-icon" id="feedbackIcon">✓</div>
+        <div class="feedback-text" id="feedbackText">Richtig erkannt!</div>
+        <div class="feedback-bonus" id="feedbackBonus">+300 Bonus</div>
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════
@@ -753,36 +1759,70 @@
 
     <script>
         // ═══════════════════════════════════════════════════════════
-        // GAME CONFIGURATION
+        // PHASE 2: ERWEITERTE KONFIGURATION
         // ═══════════════════════════════════════════════════════════
 
         const CONFIG = {
-            easy:   { cols: 4, rows: 3, pairs: 6 },
-            medium: { cols: 4, rows: 4, pairs: 8 },
-            hard:   { cols: 6, rows: 4, pairs: 12 }
+            easy: {
+                cols: 4, rows: 3, pairs: 6,
+                gameTime: 180,      // 3 Minuten
+                sortTime: 10,       // 10 Sekunden zum Sortieren
+            },
+            medium: {
+                cols: 4, rows: 4, pairs: 8,
+                gameTime: 150,      // 2:30 Minuten
+                sortTime: 7,
+            },
+            hard: {
+                cols: 6, rows: 4, pairs: 12,
+                gameTime: 120,      // 2 Minuten
+                sortTime: 5,
+            }
         };
 
         const POINTS = {
             match: 500,
-            timeBonus: 10  // pro verbleibende Sekunde (für später)
+            sortCorrect: 300,
+            sortWrong: 0,
+            timeBonus: 10,      // Pro Sekunde bei Sort
+            streakBonus: {      // Zusätzlicher Bonus bei Milestones
+                5: 200,
+                10: 500,
+                15: 1000,
+                20: 2000
+            }
         };
 
         // ═══════════════════════════════════════════════════════════
-        // GAME STATE
+        // PHASE 2: ERWEITERTER STATE
         // ═══════════════════════════════════════════════════════════
 
+        // Bestehender State
         let difficulty = 'medium';
         let cards = [];
         let flippedCards = [];
         let matchedPairs = 0;
         let totalPairs = 8;
         let score = 0;
-        let isLocked = false;  // Verhindert Klicks während Animation
+        let isLocked = false;
         let gameStartTime = null;
         let gameEndTime = null;
 
+        // NEU: Sort State
+        let currentMatchedPair = null;     // Das Paar das gerade sortiert wird
+        let streak = 0;                     // Korrekte Sortierungen in Folge
+        let maxStreak = 0;                  // Höchste Streak im Spiel
+        let correctSorts = 0;               // Korrekte Sortierungen gesamt
+        let wrongSorts = 0;                 // Falsche Sortierungen gesamt
+        let realSorted = 0;                 // In Real-Box sortiert
+        let aiSorted = 0;                   // In AI-Box sortiert
+        let sortTimerInterval = null;       // Sort-Timer Interval
+        let sortTimeLeft = 7;               // Verbleibende Sort-Zeit
+        let gameTimerInterval = null;       // Haupt-Timer
+        let gameTimeLeft = 150;             // Verbleibende Spielzeit
+
         // ═══════════════════════════════════════════════════════════
-        // DOM REFERENCES
+        // PHASE 2: ERWEITERTE DOM REFERENCES
         // ═══════════════════════════════════════════════════════════
 
         const els = {
@@ -797,6 +1837,29 @@
             resultTime: document.getElementById('resultTime'),
             btnReplay: document.getElementById('btnReplay'),
             btnMenu: document.getElementById('btnMenu'),
+        };
+
+        // Sort Elements (Phase 2)
+        const sortEls = {
+            modal: document.getElementById('sortModal'),
+            image: document.getElementById('sortImage'),
+            btnReal: document.getElementById('btnSortReal'),
+            btnAi: document.getElementById('btnSortAi'),
+            timerBar: document.getElementById('sortTimerBar'),
+            timerText: document.getElementById('sortTimerText'),
+            streak: document.getElementById('sortStreak'),
+            streakCount: document.querySelector('.streak-count'),
+            feedback: document.getElementById('sortFeedback'),
+            feedbackIcon: document.getElementById('feedbackIcon'),
+            feedbackText: document.getElementById('feedbackText'),
+            feedbackBonus: document.getElementById('feedbackBonus'),
+            realCount: document.getElementById('realCount'),
+            aiCount: document.getElementById('aiCount'),
+            realTotal: document.getElementById('realTotal'),
+            aiTotal: document.getElementById('aiTotal'),
+            realStack: document.getElementById('realStack'),
+            aiStack: document.getElementById('aiStack'),
+            gameTimerBar: document.getElementById('gameTimerBar'),
         };
 
         // ═══════════════════════════════════════════════════════════
@@ -815,6 +1878,31 @@
             // Results Buttons
             els.btnReplay.addEventListener('click', () => startGame());
             els.btnMenu.addEventListener('click', () => showScreen('start'));
+
+            // Sort Buttons (Phase 2)
+            sortEls.btnReal.addEventListener('click', () => {
+                if (!sortEls.btnReal.classList.contains('disabled')) {
+                    handleSort('real');
+                }
+            });
+
+            sortEls.btnAi.addEventListener('click', () => {
+                if (!sortEls.btnAi.classList.contains('disabled')) {
+                    handleSort('ai');
+                }
+            });
+
+            // Keyboard Support für Sort
+            document.addEventListener('keydown', (e) => {
+                if (!sortEls.modal.classList.contains('active')) return;
+                if (sortEls.btnReal.classList.contains('disabled')) return;
+
+                if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+                    handleSort('real');
+                } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+                    handleSort('ai');
+                }
+            });
         }
 
         // ═══════════════════════════════════════════════════════════
@@ -836,28 +1924,53 @@
         }
 
         // ═══════════════════════════════════════════════════════════
-        // GAME SETUP
+        // GAME SETUP (ERWEITERT)
         // ═══════════════════════════════════════════════════════════
 
         function startGame() {
-            // Reset State
             const config = CONFIG[difficulty];
+
+            // Reset State
             totalPairs = config.pairs;
             matchedPairs = 0;
             score = 0;
+            streak = 0;
+            maxStreak = 0;
+            correctSorts = 0;
+            wrongSorts = 0;
+            realSorted = 0;
+            aiSorted = 0;
             flippedCards = [];
             isLocked = false;
+            currentMatchedPair = null;
             gameStartTime = Date.now();
+            gameTimeLeft = config.gameTime;
 
-            // Generate Cards
+            // Generate & Render Cards
             cards = generateCards(totalPairs);
-
-            // Render Grid
             renderGrid(config);
+
+            // Setup Sort Boxes
+            setupSortBoxes(config);
 
             // Update UI
             updateDisplay();
             showScreen('game');
+
+            // Start Game Timer
+            startGameTimer();
+        }
+
+        function setupSortBoxes(config) {
+            const realCount = Math.ceil(config.pairs / 2);
+            const aiCount = config.pairs - realCount;
+
+            sortEls.realTotal.textContent = realCount;
+            sortEls.aiTotal.textContent = aiCount;
+            sortEls.realCount.textContent = '0';
+            sortEls.aiCount.textContent = '0';
+            sortEls.realStack.innerHTML = '';
+            sortEls.aiStack.innerHTML = '';
         }
 
         function generateCards(pairCount) {
@@ -916,7 +2029,7 @@
             const label = isReal ? `REAL ${card.index}` : `AI ${card.index}`;
 
             container.innerHTML = `
-                <div class="memory-card" data-index="${index}" data-pair-id="${card.pairId}">
+                <div class="memory-card" data-index="${index}" data-pair-id="${card.pairId}" data-type="${card.type}">
                     <div class="card-inner">
                         <div class="card-back">
                             <div class="card-pattern"></div>
@@ -970,27 +2083,42 @@
             }
         }
 
+        // ═══════════════════════════════════════════════════════════
+        // MATCH HANDLING (ERWEITERT)
+        // ═══════════════════════════════════════════════════════════
+
         function handleMatch(card1, card2) {
-            // Mark as matched
             setTimeout(() => {
                 card1.classList.add('matched');
                 card2.classList.add('matched');
 
-                // Update score
+                // Score für Match
                 score += POINTS.match;
                 matchedPairs++;
 
-                // Reset
-                flippedCards = [];
-                isLocked = false;
+                // Speichere das gematchte Paar für Sort-Phase
+                const cardData = cards.find(c => c.pairId === card1.dataset.pairId);
+                currentMatchedPair = {
+                    type: card1.dataset.type,  // 'real' oder 'ai'
+                    index: cardData ? cardData.index : 1,
+                    card1: card1,
+                    card2: card2
+                };
 
-                // Update display
+                // Reset flipped
+                flippedCards = [];
+
+                // Update Display
                 updateDisplay();
 
-                // Check for game end
-                if (matchedPairs === totalPairs) {
-                    endGame();
-                }
+                // Pause Game Timer
+                pauseGameTimer();
+
+                // Zeige Sort-Modal
+                setTimeout(() => {
+                    showSortModal();
+                }, 400);
+
             }, 300);
         }
 
@@ -1011,7 +2139,310 @@
         }
 
         // ═══════════════════════════════════════════════════════════
-        // UI UPDATES
+        // SORT MODAL
+        // ═══════════════════════════════════════════════════════════
+
+        function showSortModal() {
+            const pair = currentMatchedPair;
+            if (!pair) return;
+
+            // Update Modal Image (Placeholder für jetzt)
+            const isReal = pair.type === 'real';
+            const bgColor = isReal
+                ? 'linear-gradient(135deg, #1a4d2e, #0d2818)'
+                : 'linear-gradient(135deg, #1e3a5f, #0f1d30)';
+            const icon = isReal ? '🦉' : '🤖';
+            const label = isReal ? `REAL ${pair.index}` : `AI ${pair.index}`;
+
+            sortEls.image.innerHTML = `
+                <div class="placeholder" style="background: ${bgColor};">
+                    <span class="placeholder-icon">${icon}</span>
+                    <span class="placeholder-text">${label}</span>
+                </div>
+            `;
+
+            // Reset Buttons
+            sortEls.btnReal.classList.remove('correct', 'wrong', 'disabled');
+            sortEls.btnAi.classList.remove('correct', 'wrong', 'disabled');
+
+            // Update Streak Display
+            if (streak > 0) {
+                sortEls.streak.classList.add('active');
+                sortEls.streakCount.textContent = streak;
+
+                if (streak >= 20) {
+                    sortEls.streak.classList.add('blue-fire');
+                    sortEls.streak.classList.remove('fire');
+                } else if (streak >= 10) {
+                    sortEls.streak.classList.add('fire');
+                    sortEls.streak.classList.remove('blue-fire');
+                } else {
+                    sortEls.streak.classList.remove('fire', 'blue-fire');
+                }
+            } else {
+                sortEls.streak.classList.remove('active', 'fire', 'blue-fire');
+            }
+
+            // Show Modal
+            sortEls.modal.classList.add('active');
+
+            // Start Sort Timer
+            startSortTimer();
+        }
+
+        function hideSortModal() {
+            sortEls.modal.classList.remove('active');
+            stopSortTimer();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // SORT TIMER
+        // ═══════════════════════════════════════════════════════════
+
+        function startSortTimer() {
+            const config = CONFIG[difficulty];
+            sortTimeLeft = config.sortTime;
+
+            updateSortTimerDisplay();
+
+            sortTimerInterval = setInterval(() => {
+                sortTimeLeft -= 0.1;
+                updateSortTimerDisplay();
+
+                if (sortTimeLeft <= 0) {
+                    handleSortTimeout();
+                }
+            }, 100);
+        }
+
+        function stopSortTimer() {
+            if (sortTimerInterval) {
+                clearInterval(sortTimerInterval);
+                sortTimerInterval = null;
+            }
+        }
+
+        function updateSortTimerDisplay() {
+            const config = CONFIG[difficulty];
+            const percentage = (sortTimeLeft / config.sortTime) * 100;
+
+            sortEls.timerBar.style.width = `${percentage}%`;
+            sortEls.timerText.textContent = `${Math.ceil(sortTimeLeft)}s`;
+
+            // Warning States
+            sortEls.timerBar.classList.remove('warning', 'critical');
+            sortEls.timerText.classList.remove('warning', 'critical');
+
+            if (percentage < 30) {
+                sortEls.timerBar.classList.add('critical');
+                sortEls.timerText.classList.add('critical');
+            } else if (percentage < 50) {
+                sortEls.timerBar.classList.add('warning');
+                sortEls.timerText.classList.add('warning');
+            }
+        }
+
+        function handleSortTimeout() {
+            // Timeout = Falsche Antwort
+            const correctChoice = currentMatchedPair.type;
+            const wrongChoice = correctChoice === 'real' ? 'ai' : 'real';
+            handleSort(wrongChoice, true);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // SORT HANDLING
+        // ═══════════════════════════════════════════════════════════
+
+        function handleSort(choice, isTimeout = false) {
+            stopSortTimer();
+
+            const pair = currentMatchedPair;
+            const isCorrect = choice === pair.type;
+
+            // Disable Buttons
+            sortEls.btnReal.classList.add('disabled');
+            sortEls.btnAi.classList.add('disabled');
+
+            // Highlight gewählten Button
+            const chosenBtn = choice === 'real' ? sortEls.btnReal : sortEls.btnAi;
+            const otherBtn = choice === 'real' ? sortEls.btnAi : sortEls.btnReal;
+
+            if (isCorrect) {
+                // ═══ RICHTIG ═══
+                chosenBtn.classList.add('correct');
+
+                // Score berechnen
+                const timeBonus = Math.floor(sortTimeLeft * POINTS.timeBonus);
+                let sortScore = POINTS.sortCorrect + timeBonus;
+
+                // Streak erhöhen
+                streak++;
+                maxStreak = Math.max(maxStreak, streak);
+                correctSorts++;
+
+                // Streak Milestone Bonus
+                if (POINTS.streakBonus[streak]) {
+                    sortScore += POINTS.streakBonus[streak];
+                }
+
+                score += sortScore;
+
+                // Show Feedback
+                showSortFeedback(true, sortScore);
+
+                // Update Sort Box
+                if (pair.type === 'real') {
+                    realSorted++;
+                    animateSortBox('real');
+                } else {
+                    aiSorted++;
+                    animateSortBox('ai');
+                }
+
+            } else {
+                // ═══ FALSCH ═══
+                chosenBtn.classList.add('wrong');
+
+                // Zeige korrekte Antwort
+                setTimeout(() => {
+                    const correctBtn = pair.type === 'real' ? sortEls.btnReal : sortEls.btnAi;
+                    correctBtn.classList.add('correct');
+                }, 300);
+
+                // Streak Reset
+                streak = 0;
+                wrongSorts++;
+
+                // Show Feedback
+                const revealText = pair.type === 'real' ? 'ein echtes Foto' : 'KI-generiert';
+                showSortFeedback(false, 0, revealText);
+
+                // Trotzdem in korrekter Box sortieren
+                if (pair.type === 'real') {
+                    realSorted++;
+                    animateSortBox('real');
+                } else {
+                    aiSorted++;
+                    animateSortBox('ai');
+                }
+            }
+
+            // Nach Feedback weiter
+            setTimeout(() => {
+                hideSortModal();
+                hideSortFeedback();
+                isLocked = false;
+                currentMatchedPair = null;
+
+                updateDisplay();
+                resumeGameTimer();
+
+                // Check Game End
+                if (matchedPairs === totalPairs) {
+                    endGame();
+                }
+            }, 1500);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // SORT FEEDBACK
+        // ═══════════════════════════════════════════════════════════
+
+        function showSortFeedback(isCorrect, points, revealText = '') {
+            const feedback = sortEls.feedback;
+
+            feedback.classList.remove('correct', 'wrong');
+            feedback.classList.add(isCorrect ? 'correct' : 'wrong');
+
+            if (isCorrect) {
+                sortEls.feedbackIcon.textContent = '✓';
+                sortEls.feedbackText.textContent = 'Richtig erkannt!';
+                sortEls.feedbackBonus.textContent = `+${points}`;
+                sortEls.feedbackBonus.style.display = 'block';
+            } else {
+                sortEls.feedbackIcon.textContent = '✗';
+                sortEls.feedbackText.textContent = `Das war ${revealText}`;
+                sortEls.feedbackBonus.style.display = 'none';
+            }
+
+            feedback.classList.add('active');
+        }
+
+        function hideSortFeedback() {
+            sortEls.feedback.classList.remove('active');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // SORT BOX ANIMATION
+        // ═══════════════════════════════════════════════════════════
+
+        function animateSortBox(type) {
+            const box = document.querySelector(`.sort-box-${type === 'real' ? 'veritas' : 'robo'}`);
+            const counter = type === 'real' ? sortEls.realCount : sortEls.aiCount;
+            const stack = type === 'real' ? sortEls.realStack : sortEls.aiStack;
+            const count = type === 'real' ? realSorted : aiSorted;
+
+            // Box Animation
+            box.classList.add('receiving');
+            setTimeout(() => box.classList.remove('receiving'), 400);
+
+            // Counter Update
+            counter.textContent = count;
+            counter.classList.add('bump');
+            setTimeout(() => counter.classList.remove('bump'), 400);
+
+            // Add Mini Card to Stack
+            const miniCard = document.createElement('div');
+            miniCard.className = 'stack-mini-card';
+            stack.appendChild(miniCard);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // GAME TIMER
+        // ═══════════════════════════════════════════════════════════
+
+        function startGameTimer() {
+            updateGameTimerDisplay();
+
+            gameTimerInterval = setInterval(() => {
+                gameTimeLeft -= 0.1;
+                updateGameTimerDisplay();
+
+                if (gameTimeLeft <= 0) {
+                    endGame(true); // true = time ran out
+                }
+            }, 100);
+        }
+
+        function pauseGameTimer() {
+            if (gameTimerInterval) {
+                clearInterval(gameTimerInterval);
+                gameTimerInterval = null;
+            }
+        }
+
+        function resumeGameTimer() {
+            if (!gameTimerInterval && gameTimeLeft > 0) {
+                startGameTimer();
+            }
+        }
+
+        function updateGameTimerDisplay() {
+            const config = CONFIG[difficulty];
+            const percentage = (gameTimeLeft / config.gameTime) * 100;
+
+            sortEls.gameTimerBar.style.width = `${percentage}%`;
+
+            sortEls.gameTimerBar.classList.remove('warning', 'critical');
+            if (percentage < 20) {
+                sortEls.gameTimerBar.classList.add('critical');
+            } else if (percentage < 40) {
+                sortEls.gameTimerBar.classList.add('warning');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // UI UPDATES (ERWEITERT)
         // ═══════════════════════════════════════════════════════════
 
         function updateDisplay() {
@@ -1019,19 +2450,46 @@
             els.pairsDisplay.textContent = `${matchedPairs}/${totalPairs}`;
         }
 
-        function endGame() {
+        // ═══════════════════════════════════════════════════════════
+        // RESULTS (ERWEITERT)
+        // ═══════════════════════════════════════════════════════════
+
+        function endGame(timeRanOut = false) {
+            pauseGameTimer();
+            stopSortTimer();
+
             gameEndTime = Date.now();
             const timeTaken = Math.floor((gameEndTime - gameStartTime) / 1000);
             const minutes = Math.floor(timeTaken / 60);
             const seconds = timeTaken % 60;
             const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
-            // Update results
+            // Accuracy berechnen
+            const totalSorts = correctSorts + wrongSorts;
+            const accuracy = totalSorts > 0 ? Math.round((correctSorts / totalSorts) * 100) : 0;
+
+            // Results aktualisieren
             els.finalScore.textContent = score.toLocaleString();
             els.resultPairs.textContent = `${matchedPairs}/${totalPairs}`;
             els.resultTime.textContent = timeString;
 
-            // Show results after short delay
+            // Erweiterte Stats (für Phase 3 Results Screen)
+            // Speichere für später:
+            window.gameResults = {
+                score,
+                pairs: matchedPairs,
+                totalPairs,
+                time: timeTaken,
+                accuracy,
+                maxStreak,
+                correctSorts,
+                wrongSorts,
+                realSorted,
+                aiSorted,
+                difficulty,
+                timeRanOut
+            };
+
             setTimeout(() => {
                 showScreen('results');
             }, 500);
