@@ -1037,10 +1037,316 @@
                 padding: 1.5rem 1.25rem;
             }
         }
+
+        /* ===== LANGUAGE SWITCHER ===== */
+        .language-switcher {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.25rem;
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+        }
+
+        .lang-btn {
+            padding: 0.4rem 0.6rem;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .lang-btn.active {
+            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--veritas), var(--robo));
+        }
+
+        .top-lang-bar {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 50;
+        }
     </style>
 </head>
 
 <body>
+    <script>
+        // ===== TRANSLATIONS =====
+        const TRANSLATIONS = {
+            de: {
+                realai_title: 'ForRealScan',
+                realai_tagline: 'Real oder KI? Teste deine Fähigkeiten',
+                select_mode: 'Modus wählen',
+                mode_normal: 'Normal',
+                mode_normal_desc: 'Standard Training. Kein Druck.',
+                mode_hardcore: 'HARDCORE',
+                mode_hardcore_desc: '3 Leben. Doppelte Punkte. Game Over.',
+                score: 'Punkte',
+                streak: 'Serie',
+                btn_real: 'Real',
+                btn_ai: 'KI',
+                correct: 'Richtig!',
+                wrong: 'Falsch!',
+                time_up: 'Zeit abgelaufen!',
+                next_image: 'Nächstes Bild',
+                show_results: 'Ergebnisse',
+                game_over: 'GAME OVER 💀',
+                perfect_run: 'GODLIKE! PERFEKTER LAUF! 🏆',
+                master_detective: 'Meisterdetektiv! 🔥',
+                sharp_eye: 'Scharfes Auge!',
+                keep_training: 'Weiter trainieren!',
+                accuracy: 'Genauigkeit',
+                identified: 'Du hast',
+                out_of: 'von',
+                images_correctly: 'Bildern richtig erkannt.',
+                best_runs: 'Beste Läufe (Punkte)',
+                new_highscore: 'Neuer Highscore! Name eingeben:',
+                your_name: 'Dein Name',
+                save_score: 'Speichern',
+                share_result: 'Ergebnis teilen',
+                reset_highscores: 'Highscores zurücksetzen',
+                play_again: 'Nochmal spielen',
+                nice_run: 'Guter Lauf! Denk dran: Das ist nur Training. Für echte Checks bei viralen Posts, Screenshots oder wichtigen Fotos nutze ForRealScan.',
+                open_forrealscan: 'ForRealScan öffnen',
+                learn_more: 'Mehr über ForRealScan erfahren',
+                scanning_assets: 'Scanne Assets...',
+                detecting_images: 'Erkenne verfügbare Bilder',
+                no_scores: 'Noch keine Punkte',
+                confirm_reset: 'Möchtest du wirklich alle Highscores löschen?',
+                copied: 'Kopiert!',
+            },
+            en: {
+                realai_title: 'ForRealScan',
+                realai_tagline: 'Real or AI? Test Your Skills',
+                select_mode: 'Select Mode',
+                mode_normal: 'Normal',
+                mode_normal_desc: 'Standard training. No pressure.',
+                mode_hardcore: 'HARDCORE',
+                mode_hardcore_desc: '3 Lives. Double Points. Game Over.',
+                score: 'Score',
+                streak: 'Streak',
+                btn_real: 'Real',
+                btn_ai: 'AI',
+                correct: 'Correct!',
+                wrong: 'Wrong!',
+                time_up: 'Time Up!',
+                next_image: 'Next Image',
+                show_results: 'Show Results',
+                game_over: 'GAME OVER 💀',
+                perfect_run: 'GODLIKE! PERFECT RUN! 🏆',
+                master_detective: 'Master Detective! 🔥',
+                sharp_eye: 'Sharp Eye!',
+                keep_training: 'Keep Training!',
+                accuracy: 'Accuracy',
+                identified: 'You identified',
+                out_of: 'out of',
+                images_correctly: 'images correctly.',
+                best_runs: 'Best Runs (Points)',
+                new_highscore: 'New Highscore! Enter Name:',
+                your_name: 'Your Name',
+                save_score: 'Save Score',
+                share_result: 'Share Result',
+                reset_highscores: 'Reset Highscores',
+                play_again: 'Play Again',
+                nice_run: 'Nice run! Remember: this is just training. For real checks on viral posts, screenshots or important photos, use ForRealScan.',
+                open_forrealscan: 'Open ForRealScan',
+                learn_more: 'Learn more about ForRealScan',
+                scanning_assets: 'Scanning Assets...',
+                detecting_images: 'Detecting available images',
+                no_scores: 'No scores yet',
+                confirm_reset: 'Are you sure you want to delete all highscores?',
+                copied: 'Copied!',
+            },
+            it: {
+                realai_title: 'ForRealScan',
+                realai_tagline: 'Reale o IA? Metti alla prova le tue abilità',
+                select_mode: 'Seleziona Modalità',
+                mode_normal: 'Normale',
+                mode_normal_desc: 'Allenamento standard. Nessuna pressione.',
+                mode_hardcore: 'HARDCORE',
+                mode_hardcore_desc: '3 Vite. Punti doppi. Game Over.',
+                score: 'Punti',
+                streak: 'Serie',
+                btn_real: 'Reale',
+                btn_ai: 'IA',
+                correct: 'Corretto!',
+                wrong: 'Sbagliato!',
+                time_up: 'Tempo scaduto!',
+                next_image: 'Prossima Immagine',
+                show_results: 'Mostra Risultati',
+                game_over: 'GAME OVER 💀',
+                perfect_run: 'GODLIKE! PERFETTO! 🏆',
+                master_detective: 'Detective Esperto! 🔥',
+                sharp_eye: 'Occhio Acuto!',
+                keep_training: 'Continua ad allenarti!',
+                accuracy: 'Precisione',
+                identified: 'Hai identificato',
+                out_of: 'su',
+                images_correctly: 'immagini correttamente.',
+                best_runs: 'Migliori Partite (Punti)',
+                new_highscore: 'Nuovo Record! Inserisci Nome:',
+                your_name: 'Il tuo Nome',
+                save_score: 'Salva',
+                share_result: 'Condividi Risultato',
+                reset_highscores: 'Reimposta Punteggi',
+                play_again: 'Gioca Ancora',
+                nice_run: 'Bella partita! Ricorda: questo è solo allenamento. Per verifiche reali su post virali, screenshot o foto importanti, usa ForRealScan.',
+                open_forrealscan: 'Apri ForRealScan',
+                learn_more: 'Scopri di più su ForRealScan',
+                scanning_assets: 'Scansione Assets...',
+                detecting_images: 'Rilevamento immagini disponibili',
+                no_scores: 'Nessun punteggio',
+                confirm_reset: 'Sei sicuro di voler eliminare tutti i punteggi?',
+                copied: 'Copiato!',
+            },
+            es: {
+                realai_title: 'ForRealScan',
+                realai_tagline: '¿Real o IA? Pon a prueba tus habilidades',
+                select_mode: 'Seleccionar Modo',
+                mode_normal: 'Normal',
+                mode_normal_desc: 'Entrenamiento estándar. Sin presión.',
+                mode_hardcore: 'HARDCORE',
+                mode_hardcore_desc: '3 Vidas. Puntos dobles. Game Over.',
+                score: 'Puntos',
+                streak: 'Racha',
+                btn_real: 'Real',
+                btn_ai: 'IA',
+                correct: '¡Correcto!',
+                wrong: '¡Incorrecto!',
+                time_up: '¡Tiempo agotado!',
+                next_image: 'Siguiente Imagen',
+                show_results: 'Ver Resultados',
+                game_over: 'GAME OVER 💀',
+                perfect_run: '¡GODLIKE! ¡PARTIDA PERFECTA! 🏆',
+                master_detective: '¡Detective Maestro! 🔥',
+                sharp_eye: '¡Ojo Agudo!',
+                keep_training: '¡Sigue Entrenando!',
+                accuracy: 'Precisión',
+                identified: 'Identificaste',
+                out_of: 'de',
+                images_correctly: 'imágenes correctamente.',
+                best_runs: 'Mejores Partidas (Puntos)',
+                new_highscore: '¡Nuevo Récord! Ingresa tu Nombre:',
+                your_name: 'Tu Nombre',
+                save_score: 'Guardar',
+                share_result: 'Compartir Resultado',
+                reset_highscores: 'Reiniciar Puntajes',
+                play_again: 'Jugar de Nuevo',
+                nice_run: '¡Buena partida! Recuerda: esto es solo entrenamiento. Para verificaciones reales en publicaciones virales, capturas o fotos importantes, usa ForRealScan.',
+                open_forrealscan: 'Abrir ForRealScan',
+                learn_more: 'Conoce más sobre ForRealScan',
+                scanning_assets: 'Escaneando Assets...',
+                detecting_images: 'Detectando imágenes disponibles',
+                no_scores: 'Sin puntajes aún',
+                confirm_reset: '¿Estás seguro de que quieres eliminar todos los puntajes?',
+                copied: '¡Copiado!',
+            },
+            fr: {
+                realai_title: 'ForRealScan',
+                realai_tagline: 'Réel ou IA? Testez vos compétences',
+                select_mode: 'Choisir le Mode',
+                mode_normal: 'Normal',
+                mode_normal_desc: 'Entraînement standard. Sans pression.',
+                mode_hardcore: 'HARDCORE',
+                mode_hardcore_desc: '3 Vies. Points doublés. Game Over.',
+                score: 'Points',
+                streak: 'Série',
+                btn_real: 'Réel',
+                btn_ai: 'IA',
+                correct: 'Correct!',
+                wrong: 'Faux!',
+                time_up: 'Temps écoulé!',
+                next_image: 'Image Suivante',
+                show_results: 'Voir Résultats',
+                game_over: 'GAME OVER 💀',
+                perfect_run: 'GODLIKE! PARFAIT! 🏆',
+                master_detective: 'Détective Expert! 🔥',
+                sharp_eye: 'Œil Vif!',
+                keep_training: 'Continuez à vous entraîner!',
+                accuracy: 'Précision',
+                identified: 'Vous avez identifié',
+                out_of: 'sur',
+                images_correctly: 'images correctement.',
+                best_runs: 'Meilleures Parties (Points)',
+                new_highscore: 'Nouveau Record! Entrez votre Nom:',
+                your_name: 'Votre Nom',
+                save_score: 'Sauvegarder',
+                share_result: 'Partager Résultat',
+                reset_highscores: 'Réinitialiser Scores',
+                play_again: 'Rejouer',
+                nice_run: 'Belle partie! Rappelez-vous: ceci n\'est qu\'un entraînement. Pour des vérifications réelles sur des posts viraux, captures d\'écran ou photos importantes, utilisez ForRealScan.',
+                open_forrealscan: 'Ouvrir ForRealScan',
+                learn_more: 'En savoir plus sur ForRealScan',
+                scanning_assets: 'Analyse des Assets...',
+                detecting_images: 'Détection des images disponibles',
+                no_scores: 'Pas encore de scores',
+                confirm_reset: 'Êtes-vous sûr de vouloir supprimer tous les scores?',
+                copied: 'Copié!',
+            }
+        };
+
+        // ===== LANGUAGE SYSTEM =====
+        function getLanguage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            if (urlLang && TRANSLATIONS[urlLang]) return urlLang;
+
+            const savedLang = localStorage.getItem('forRealScan_language');
+            if (savedLang && TRANSLATIONS[savedLang]) return savedLang;
+
+            const browserLang = navigator.language.split('-')[0];
+            if (TRANSLATIONS[browserLang]) return browserLang;
+
+            return 'de';
+        }
+
+        let currentLang = getLanguage();
+
+        function setLanguage(lang) {
+            if (!TRANSLATIONS[lang]) return;
+            currentLang = lang;
+            localStorage.setItem('forRealScan_language', lang);
+            applyTranslations();
+        }
+
+        function t(key) {
+            return TRANSLATIONS[currentLang][key] || TRANSLATIONS['de'][key] || key;
+        }
+
+        function applyTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                el.textContent = t(key);
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                el.placeholder = t(key);
+            });
+        }
+    </script>
+
+    <!-- Language Switcher -->
+    <div class="top-lang-bar">
+        <div class="language-switcher">
+            <button class="lang-btn" data-lang="de">DE</button>
+            <button class="lang-btn" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="it">IT</button>
+            <button class="lang-btn" data-lang="es">ES</button>
+            <button class="lang-btn" data-lang="fr">FR</button>
+        </div>
+    </div>
+
     <!-- Glow Orbs -->
     <div class="glow-orb glow-orb-veritas"></div>
     <div class="glow-orb glow-orb-robo"></div>
@@ -1048,8 +1354,8 @@
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner"></div>
-        <div class="loading-text">Scanning Assets...</div>
-        <div class="loading-subtext">Detecting available images</div>
+        <div class="loading-text" data-i18n="scanning_assets">Scanning Assets...</div>
+        <div class="loading-subtext" data-i18n="detecting_images">Detecting available images</div>
     </div>
 
     <canvas id="confettiCanvas"></canvas>
@@ -1060,9 +1366,9 @@
             <header>
                 <div class="logo-container">
                     <img src="Logo_Master-removebg-preview.png" alt="ForRealScan Logo" class="logo-img">
-                    <h1>ForRealScan</h1>
+                    <h1 data-i18n="realai_title">ForRealScan</h1>
                 </div>
-                <p class="subtitle">Real or AI? Test Your Skills</p>
+                <p class="subtitle" data-i18n="realai_tagline">Real or AI? Test Your Skills</p>
             </header>
             <div class="lives-display" id="livesDisplay">❤️❤️❤️</div>
             <button class="mute-btn" id="btnMute" title="Toggle Sound">
@@ -1072,14 +1378,14 @@
 
         <!-- Start Screen -->
         <div class="start-screen glass-panel" id="startScreen">
-            <h2>Select Mode</h2>
+            <h2 data-i18n="select_mode">Select Mode</h2>
             <button class="mode-btn mode-normal" id="btnModeNormal">
-                Normal
-                <span class="mode-desc">Standard training. No pressure.</span>
+                <span data-i18n="mode_normal">Normal</span>
+                <span class="mode-desc" data-i18n="mode_normal_desc">Standard training. No pressure.</span>
             </button>
             <button class="mode-btn mode-hardcore" id="btnModeHardcore">
-                💀 HARDCORE 💀
-                <span class="mode-desc">3 Lives. Double Points. Game Over.</span>
+                💀 <span data-i18n="mode_hardcore">HARDCORE</span> 💀
+                <span class="mode-desc" data-i18n="mode_hardcore_desc">3 Lives. Double Points. Game Over.</span>
             </button>
         </div>
 
@@ -1095,11 +1401,11 @@
 
             <div class="score-panel glass-panel">
                 <div class="score-item">
-                    <span class="score-label">Score</span>
+                    <span class="score-label" data-i18n="score">Score</span>
                     <span class="score-value" id="scoreDisplay">0</span>
                 </div>
                 <div class="score-item">
-                    <span class="score-label">Streak</span>
+                    <span class="score-label" data-i18n="streak">Streak</span>
                     <span class="score-value"><span id="streakDisplay">0</span> <span class="multiplier"
                             id="multiplierDisplay">x1.0</span></span>
                 </div>
@@ -1112,14 +1418,14 @@
                 </div>
 
                 <div class="controls" id="guessControls">
-                    <button class="btn btn-real" id="btnReal">Real</button>
-                    <button class="btn btn-ai" id="btnAi">AI</button>
+                    <button class="btn btn-real" id="btnReal" data-i18n="btn_real">Real</button>
+                    <button class="btn btn-ai" id="btnAi" data-i18n="btn_ai">AI</button>
                 </div>
 
                 <div class="feedback-area" id="feedbackArea" aria-live="polite">
                     <div class="feedback-title" id="feedbackTitle"></div>
                     <div class="points-gained" id="pointsGained"></div>
-                    <button class="btn-next" id="btnNext">Next Image</button>
+                    <button class="btn-next" id="btnNext" data-i18n="next_image">Next Image</button>
                 </div>
             </main>
         </div>
@@ -1135,58 +1441,57 @@
 
             <div style="width: 100%;">
                 <div class="results-msg" id="resultsTitle"></div>
-                <p class="subtitle" style="text-align: center; margin-bottom: 1.25rem;">
-                    You identified <span id="correctCount">0</span> out of <span id="totalCount">30</span> images
-                    correctly.
+                <p class="subtitle" id="resultsSummary" style="text-align: center; margin-bottom: 1.25rem;">
+                    <span data-i18n="identified">You identified</span> <span id="correctCount">0</span> <span data-i18n="out_of">out of</span> <span id="totalCount">30</span> <span data-i18n="images_correctly">images correctly.</span>
                 </p>
 
                 <!-- Stats Breakdown -->
                 <div class="stats-container">
                     <div class="stat-box">
-                        <div class="stat-label real">Real</div>
+                        <div class="stat-label real" data-i18n="btn_real">Real</div>
                         <div class="stat-value" id="statReal">0 / 15</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-label ai">AI</div>
+                        <div class="stat-label ai" data-i18n="btn_ai">AI</div>
                         <div class="stat-value" id="statAi">0 / 15</div>
                     </div>
                 </div>
 
                 <button class="btn-share" id="btnShare">
-                    📋 Share Result
+                    📋 <span data-i18n="share_result">Share Result</span>
                 </button>
 
                 <!-- Highscore Section -->
                 <div class="highscore-section">
-                    <div class="highscore-title">Best Runs (Points)</div>
+                    <div class="highscore-title" data-i18n="best_runs">Best Runs (Points)</div>
 
                     <div class="highscore-input-area" id="highscoreInputArea">
-                        <p style="text-align: center; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--veritas);">New Highscore! Enter Name:</p>
-                        <input type="text" id="playerNameInput" class="highscore-input" placeholder="Your Name"
+                        <p style="text-align: center; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--veritas);" data-i18n="new_highscore">New Highscore! Enter Name:</p>
+                        <input type="text" id="playerNameInput" class="highscore-input" data-i18n-placeholder="your_name" placeholder="Your Name"
                             maxlength="12">
-                        <button class="btn-save" id="btnSaveScore">Save Score</button>
+                        <button class="btn-save" id="btnSaveScore" data-i18n="save_score">Save Score</button>
                     </div>
 
                     <ul class="highscore-list" id="highscoreList">
                         <!-- List items will be injected here -->
                     </ul>
-                    <button class="btn-reset-score" id="btnResetScore">Reset Highscores</button>
+                    <button class="btn-reset-score" id="btnResetScore" data-i18n="reset_highscores">Reset Highscores</button>
                 </div>
             </div>
 
             <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-                <button class="btn btn-real" id="btnRestart" style="width: 100%; max-width: 300px;">Play Again</button>
-                <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 1.25rem; max-width: 400px; line-height: 1.5; opacity: 0.8;">
+                <button class="btn btn-real" id="btnRestart" style="width: 100%; max-width: 300px;" data-i18n="play_again">Play Again</button>
+                <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 1.25rem; max-width: 400px; line-height: 1.5; opacity: 0.8;" data-i18n="nice_run">
                     Nice run! Remember: this is just training. For real checks on viral posts, screenshots or important
                     photos, use ForRealScan.
                 </p>
 
                 <a href="https://forrealscan.com" target="_blank" class="btn btn-real cta-link"
-                    style="width: 100%; max-width: 300px; margin-top: 1.25rem;">
+                    style="width: 100%; max-width: 300px; margin-top: 1.25rem;" data-i18n="open_forrealscan">
                     Open ForRealScan
                 </a>
 
-                <a href="https://forrealscan.com" target="_blank" class="learn-more-link" style="margin-top: 0.75rem;">
+                <a href="https://forrealscan.com" target="_blank" class="learn-more-link" style="margin-top: 0.75rem;" data-i18n="learn_more">
                     Learn more about ForRealScan
                 </a>
             </div>
@@ -1599,13 +1904,13 @@
                 if (currentImg.label === 'real') realCorrect++;
                 if (currentImg.label === 'ai') aiCorrect++;
 
-                els.feedbackTitle.textContent = 'Correct!';
+                els.feedbackTitle.textContent = t('correct');
                 els.feedbackTitle.style.color = 'var(--veritas)';
                 els.pointsGained.textContent = `+${roundPoints} pts (Time: ${timeLeft.toFixed(1)}s)`;
                 AudioSys.playCorrect();
             } else {
                 streak = 0;
-                els.feedbackTitle.textContent = guess === 'TIMEOUT' ? 'Time Up!' : 'Wrong!';
+                els.feedbackTitle.textContent = guess === 'TIMEOUT' ? t('time_up') : t('wrong');
                 els.feedbackTitle.style.color = 'var(--color-error)';
                 els.pointsGained.textContent = `+0 pts`;
                 AudioSys.playWrong();
@@ -1624,7 +1929,7 @@
             els.feedbackArea.classList.add('visible');
 
             const isLast = currentIndex === shuffledImages.length - 1;
-            els.btnNext.textContent = isLast ? 'Show Results' : 'Next Image';
+            els.btnNext.textContent = isLast ? t('show_results') : t('next_image');
             els.btnNext.style.display = 'block';
             els.btnNext.focus();
 
@@ -1647,24 +1952,24 @@
             els.finalScoreCircle.style.background = `conic-gradient(var(--veritas) ${percentage}%, rgba(255,255,255,0.05) ${percentage}%)`;
 
             if (isGameOver) {
-                els.resultsTitle.textContent = "GAME OVER 💀";
+                els.resultsTitle.textContent = t('game_over');
                 els.resultsTitle.style.color = "var(--color-error)";
                 AudioSys.playGameOver();
             } else {
                 els.resultsTitle.style.color = "var(--text-primary)";
                 if (percentage === 100) {
                     document.body.classList.add('perfect-run');
-                    els.resultsTitle.textContent = "GODLIKE! PERFECT RUN! 🏆";
+                    els.resultsTitle.textContent = t('perfect_run');
                     AudioSys.playGodMode();
                     Confetti.start();
                 } else {
                     AudioSys.playFanfare();
                     if (percentage <= 30) {
-                        els.resultsTitle.textContent = "Keep Training!";
+                        els.resultsTitle.textContent = t('keep_training');
                     } else if (percentage <= 70) {
-                        els.resultsTitle.textContent = "Sharp Eye!";
+                        els.resultsTitle.textContent = t('sharp_eye');
                     } else {
-                        els.resultsTitle.textContent = "Master Detective! 🔥";
+                        els.resultsTitle.textContent = t('master_detective');
                     }
                 }
             }
@@ -1697,7 +2002,7 @@
             `).join('');
 
             if (scores.length === 0) {
-                els.highscoreList.innerHTML = '<li style="text-align:center; color:var(--text-muted); padding:0.5rem; font-size: 0.85rem;">No scores yet</li>';
+                els.highscoreList.innerHTML = `<li style="text-align:center; color:var(--text-muted); padding:0.5rem; font-size: 0.85rem;">${t('no_scores')}</li>`;
             }
         }
 
@@ -1760,7 +2065,7 @@
         els.btnSaveScore.addEventListener('click', saveHighscore);
 
         els.btnResetScore.addEventListener('click', () => {
-            if (confirm('Are you sure you want to delete all highscores?')) {
+            if (confirm(t('confirm_reset'))) {
                 localStorage.removeItem(HS_KEY);
                 renderHighscores();
             }
@@ -1773,16 +2078,39 @@
         });
 
         els.btnShare.addEventListener('click', () => {
-            const text = `I scored ${totalScore.toLocaleString()} pts (${correctCount}/${shuffledImages.length}) in ForRealScan! 🦅 Can you beat me? game.forrealscan.com`;
+            const text = `${totalScore.toLocaleString()} pts (${correctCount}/${shuffledImages.length}) in ForRealScan! 🦅 game.forrealscan.com`;
             navigator.clipboard.writeText(text).then(() => {
-                const originalText = els.btnShare.textContent;
-                els.btnShare.textContent = '✅ Copied!';
-                setTimeout(() => els.btnShare.textContent = originalText, 2000);
+                const shareSpan = els.btnShare.querySelector('span');
+                const originalText = shareSpan.textContent;
+                shareSpan.textContent = `✅ ${t('copied')}`;
+                setTimeout(() => shareSpan.textContent = originalText, 2000);
             });
         });
 
         els.btnModeNormal.addEventListener('click', () => initGame('normal'));
         els.btnModeHardcore.addEventListener('click', () => initGame('hardcore'));
+
+        // ===== LANGUAGE INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            currentLang = getLanguage();
+
+            // Mark active language button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === currentLang);
+            });
+
+            // Apply translations
+            applyTranslations();
+
+            // Language Switcher Events
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    setLanguage(btn.dataset.lang);
+                });
+            });
+        });
 
         document.getElementById('startScreen').style.display = 'none';
         discoverImages();

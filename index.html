@@ -357,10 +357,149 @@
                 font-size: 0.8rem;
             }
         }
+        /* ===== LANGUAGE SWITCHER ===== */
+        .language-switcher {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.25rem;
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+        }
+
+        .lang-btn {
+            padding: 0.4rem 0.6rem;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .lang-btn.active {
+            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--veritas), var(--robo));
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 10;
+        }
     </style>
 </head>
 
 <body>
+    <script>
+        // ===== TRANSLATIONS =====
+        const TRANSLATIONS = {
+            de: {
+                hub_title: 'Game Center',
+                hub_tagline: 'Trainiere deine KI-Erkennung',
+                game_realai_title: 'Real or AI?',
+                game_realai_desc: 'Erkenne ob Bilder echt oder KI-generiert sind. Schnell. Präzise.',
+                game_memory_title: 'Memory Scan',
+                game_memory_desc: 'Finde Paare und sortiere sie in Real oder KI.',
+                btn_play: 'Spielen →',
+            },
+            en: {
+                hub_title: 'Game Center',
+                hub_tagline: 'Train your AI detection skills',
+                game_realai_title: 'Real or AI?',
+                game_realai_desc: 'Detect if images are real or AI-generated. Fast. Precise.',
+                game_memory_title: 'Memory Scan',
+                game_memory_desc: 'Find pairs and sort them into Real or AI.',
+                btn_play: 'Play →',
+            },
+            it: {
+                hub_title: 'Game Center',
+                hub_tagline: 'Allena il tuo rilevamento IA',
+                game_realai_title: 'Reale o IA?',
+                game_realai_desc: 'Riconosci se le immagini sono reali o generate da IA. Veloce. Preciso.',
+                game_memory_title: 'Memory Scan',
+                game_memory_desc: 'Trova le coppie e ordinale in Reale o IA.',
+                btn_play: 'Gioca →',
+            },
+            es: {
+                hub_title: 'Game Center',
+                hub_tagline: 'Entrena tu detección de IA',
+                game_realai_title: '¿Real o IA?',
+                game_realai_desc: 'Detecta si las imágenes son reales o generadas por IA. Rápido. Preciso.',
+                game_memory_title: 'Memory Scan',
+                game_memory_desc: 'Encuentra parejas y clasifícalas en Real o IA.',
+                btn_play: 'Jugar →',
+            },
+            fr: {
+                hub_title: 'Game Center',
+                hub_tagline: 'Entraînez votre détection d\'IA',
+                game_realai_title: 'Réel ou IA?',
+                game_realai_desc: 'Détectez si les images sont réelles ou générées par IA. Rapide. Précis.',
+                game_memory_title: 'Memory Scan',
+                game_memory_desc: 'Trouvez des paires et triez-les en Réel ou IA.',
+                btn_play: 'Jouer →',
+            }
+        };
+
+        // ===== LANGUAGE SYSTEM =====
+        function getLanguage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            if (urlLang && TRANSLATIONS[urlLang]) return urlLang;
+
+            const savedLang = localStorage.getItem('forRealScan_language');
+            if (savedLang && TRANSLATIONS[savedLang]) return savedLang;
+
+            const browserLang = navigator.language.split('-')[0];
+            if (TRANSLATIONS[browserLang]) return browserLang;
+
+            return 'de';
+        }
+
+        let currentLang = getLanguage();
+
+        function setLanguage(lang) {
+            if (!TRANSLATIONS[lang]) return;
+            currentLang = lang;
+            localStorage.setItem('forRealScan_language', lang);
+            applyTranslations();
+        }
+
+        function t(key) {
+            return TRANSLATIONS[currentLang][key] || TRANSLATIONS['de'][key] || key;
+        }
+
+        function applyTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                el.textContent = t(key);
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                el.placeholder = t(key);
+            });
+        }
+    </script>
+    <!-- Language Switcher -->
+    <div class="top-bar">
+        <div class="language-switcher">
+            <button class="lang-btn" data-lang="de">DE</button>
+            <button class="lang-btn" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="it">IT</button>
+            <button class="lang-btn" data-lang="es">ES</button>
+            <button class="lang-btn" data-lang="fr">FR</button>
+        </div>
+    </div>
+
     <!-- Glow Orbs -->
     <div class="glow-orb glow-orb-veritas"></div>
     <div class="glow-orb glow-orb-robo"></div>
@@ -369,8 +508,8 @@
         <header>
             <div class="logo-container">
                 <img src="Logo_Master-removebg-preview.png" alt="ForRealScan Logo" class="logo-img">
-                <h1>Game Center</h1>
-                <p class="subtitle">Trainiere deine KI-Erkennung</p>
+                <h1 data-i18n="hub_title">Game Center</h1>
+                <p class="subtitle" data-i18n="hub_tagline">Trainiere deine KI-Erkennung</p>
             </div>
         </header>
 
@@ -378,22 +517,22 @@
             <a href="real-or-ai.html" class="game-card game-card-realai">
                 <div class="card-icon">🎯</div>
                 <div class="card-content">
-                    <h2 class="card-title">Real or AI?</h2>
-                    <p class="card-desc">Erkenne ob Bilder echt oder KI-generiert sind. Schnell. Präzise.</p>
+                    <h2 class="card-title" data-i18n="game_realai_title">Real or AI?</h2>
+                    <p class="card-desc" data-i18n="game_realai_desc">Erkenne ob Bilder echt oder KI-generiert sind. Schnell. Präzise.</p>
                 </div>
                 <div class="card-action">
-                    <span class="play-btn">Spielen →</span>
+                    <span class="play-btn" data-i18n="btn_play">Spielen →</span>
                 </div>
             </a>
 
             <a href="memory.html" class="game-card game-card-memory">
                 <div class="card-icon">🧠</div>
                 <div class="card-content">
-                    <h2 class="card-title">Memory Scan</h2>
-                    <p class="card-desc">Finde Paare und sortiere sie in Real oder KI.</p>
+                    <h2 class="card-title" data-i18n="game_memory_title">Memory Scan</h2>
+                    <p class="card-desc" data-i18n="game_memory_desc">Finde Paare und sortiere sie in Real oder KI.</p>
                 </div>
                 <div class="card-action">
-                    <span class="play-btn">Spielen →</span>
+                    <span class="play-btn" data-i18n="btn_play">Spielen →</span>
                 </div>
             </a>
         </nav>
@@ -402,6 +541,30 @@
 
         <a href="https://forrealscan.com" target="_blank" class="footer-link">forrealscan.com</a>
     </div>
+
+    <script>
+        // ===== LANGUAGE INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            currentLang = getLanguage();
+
+            // Mark active button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === currentLang);
+            });
+
+            // Apply translations
+            applyTranslations();
+        });
+
+        // Language Switcher Events
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                setLanguage(btn.dataset.lang);
+            });
+        });
+    </script>
 </body>
 
 </html>
