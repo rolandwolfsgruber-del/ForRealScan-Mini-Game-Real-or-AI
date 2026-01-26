@@ -1526,10 +1526,763 @@
                 padding: 1rem 0.75rem;
             }
         }
+
+        /* ═══════════════════════════════════════════════════════════
+           PHASE 3: SOUND TOGGLE BUTTON
+           ═══════════════════════════════════════════════════════════ */
+
+        .btn-sound {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 50;
+        }
+
+        .btn-sound:hover {
+            background: rgba(15, 20, 36, 0.85);
+            border-color: var(--glass-border-hover);
+        }
+
+        .btn-sound .sound-off {
+            display: none;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           PHASE 3: PAUSE BUTTON & OVERLAY
+           ═══════════════════════════════════════════════════════════ */
+
+        .btn-pause {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-pause:hover {
+            background: rgba(15, 20, 36, 0.85);
+        }
+
+        .pause-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 13, 26, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .pause-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .pause-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-2xl);
+            padding: 2rem;
+            text-align: center;
+            max-width: 320px;
+            width: 100%;
+        }
+
+        .pause-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .pause-info {
+            color: var(--text-muted);
+            margin: 0 0 1.5rem 0;
+        }
+
+        .pause-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           PHASE 3: TUTORIAL OVERLAY
+           ═══════════════════════════════════════════════════════════ */
+
+        .tutorial-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 13, 26, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 200;
+
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .tutorial-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tutorial-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-2xl);
+            padding: 2rem;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Tutorial Steps */
+        .tutorial-step {
+            display: none;
+        }
+
+        .tutorial-step.active {
+            display: block;
+            animation: step-in 0.4s var(--ease-bounce);
+        }
+
+        @keyframes step-in {
+            0% { opacity: 0; transform: translateX(20px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Tutorial Visual Demos */
+        .tutorial-visual {
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        /* Step 1: Cards Demo */
+        .tutorial-cards-demo {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .demo-card {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(145deg, var(--bg-tertiary), var(--bg-secondary));
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            transition: all 0.5s var(--ease-bounce);
+        }
+
+        .demo-card::after {
+            content: '?';
+        }
+
+        .demo-card.flipped {
+            background: linear-gradient(135deg, #1a4d2e, #0d2818);
+            border-color: var(--veritas);
+        }
+
+        .demo-card.flipped::after {
+            content: '🦉';
+        }
+
+        /* Animation: Cards flip alternating */
+        .tutorial-step[data-step="1"].active .demo-card:first-child {
+            animation: demo-flip 2s ease-in-out infinite;
+        }
+
+        .tutorial-step[data-step="1"].active .demo-card:last-child {
+            animation: demo-flip 2s ease-in-out 0.3s infinite;
+        }
+
+        @keyframes demo-flip {
+            0%, 40% { transform: rotateY(0); }
+            50%, 90% { transform: rotateY(180deg); background: linear-gradient(135deg, #1a4d2e, #0d2818); border-color: var(--veritas); }
+            100% { transform: rotateY(0); }
+        }
+
+        /* Step 2: Sort Demo */
+        .tutorial-sort-demo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .demo-image {
+            font-size: 3rem;
+            animation: demo-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes demo-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .demo-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .demo-btn-real, .demo-btn-ai {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .demo-btn-real {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid var(--veritas);
+            color: var(--veritas-light);
+            animation: demo-btn-pulse 2s ease-in-out infinite;
+        }
+
+        .demo-btn-ai {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid var(--robo);
+            color: var(--robo-light);
+            animation: demo-btn-pulse 2s ease-in-out 1s infinite;
+        }
+
+        @keyframes demo-btn-pulse {
+            0%, 45%, 100% { transform: scale(1); box-shadow: none; }
+            50%, 95% { transform: scale(1.05); box-shadow: 0 0 15px currentColor; }
+        }
+
+        /* Step 3: Score Demo */
+        .tutorial-score-demo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .demo-score {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--color-gold);
+            text-shadow: 0 0 20px rgba(234, 179, 8, 0.5);
+            animation: demo-score-pop 1.5s ease-in-out infinite;
+        }
+
+        @keyframes demo-score-pop {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .demo-streak {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-warning);
+            animation: demo-streak-shake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes demo-streak-shake {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        /* Tutorial Text */
+        .tutorial-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .tutorial-desc {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin: 0 0 1.5rem 0;
+            line-height: 1.5;
+        }
+
+        /* Tutorial Navigation */
+        .tutorial-nav {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .tutorial-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tutorial-dots .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tutorial-dots .dot.active {
+            background: linear-gradient(135deg, var(--veritas), var(--robo));
+            transform: scale(1.2);
+        }
+
+        .btn-tutorial-next,
+        .btn-tutorial-start {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-tutorial-next {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-tutorial-next:hover {
+            background: rgba(21, 27, 46, 0.9);
+        }
+
+        .btn-tutorial-start {
+            background: linear-gradient(135deg, var(--veritas), var(--robo));
+            color: white;
+            display: none;
+        }
+
+        .btn-tutorial-start:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Tutorial Skip */
+        .btn-tutorial-skip {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-tutorial-skip:hover {
+            color: var(--text-primary);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           PHASE 3: HIGHSCORE NOTICE & LIST
+           ═══════════════════════════════════════════════════════════ */
+
+        .highscore-notice {
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(145deg, rgba(234, 179, 8, 0.15), rgba(234, 179, 8, 0.05));
+            border: 2px solid rgba(234, 179, 8, 0.4);
+            border-radius: var(--radius-xl);
+            animation: highscore-glow 2s ease-in-out infinite alternate;
+            display: none;
+        }
+
+        @keyframes highscore-glow {
+            0% { box-shadow: 0 0 20px rgba(234, 179, 8, 0.2); }
+            100% { box-shadow: 0 0 40px rgba(234, 179, 8, 0.4); }
+        }
+
+        .highscore-badge {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--color-gold);
+            text-shadow: 0 0 15px rgba(234, 179, 8, 0.5);
+            animation: badge-bounce 0.6s var(--ease-bounce);
+        }
+
+        @keyframes badge-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .highscore-rank {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin: 0.5rem 0 1rem 0;
+        }
+
+        .highscore-rank span {
+            font-weight: 700;
+            color: var(--color-gold);
+        }
+
+        .highscore-form {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .highscore-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .highscore-input:focus {
+            border-color: var(--color-gold);
+        }
+
+        .highscore-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn-save-score {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--color-gold), hsl(38, 92%, 40%));
+            border: none;
+            border-radius: var(--radius-lg);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-save-score:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(234, 179, 8, 0.4);
+        }
+
+        /* Highscore List */
+        .highscore-list {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .highscore-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin: 0 0 1rem 0;
+        }
+
+        .highscore-entries {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .highscore-entry {
+            display: grid;
+            grid-template-columns: 2rem 1fr auto;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--glass-bg);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+        }
+
+        .highscore-entry.highlight {
+            background: linear-gradient(145deg, rgba(234, 179, 8, 0.15), rgba(234, 179, 8, 0.05));
+            border: 1px solid rgba(234, 179, 8, 0.3);
+        }
+
+        .entry-rank {
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .highscore-entry:nth-child(1) .entry-rank { color: var(--color-gold); }
+        .highscore-entry:nth-child(2) .entry-rank { color: #c0c0c0; }
+        .highscore-entry:nth-child(3) .entry-rank { color: hsl(30, 60%, 50%); }
+
+        .entry-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .entry-score {
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .entry-difficulty {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+            margin-left: 0.5rem;
+        }
+
+        .btn-reset-scores {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-reset-scores:hover {
+            border-color: var(--color-error);
+            color: var(--color-error);
+        }
+
+        /* Empty State */
+        .highscore-empty {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           PHASE 3: TOAST NOTIFICATION
+           ═══════════════════════════════════════════════════════════ */
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s var(--ease-smooth);
+            z-index: 300;
+        }
+
+        .toast.active {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           PHASE 3: ACCESSIBILITY
+           ═══════════════════════════════════════════════════════════ */
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            /* Cards: No 3D flip, use fade instead */
+            .card-inner {
+                transition: none !important;
+            }
+
+            .memory-card.flipped .card-inner {
+                transform: none !important;
+            }
+
+            .memory-card .card-back {
+                opacity: 1;
+                transition: opacity 0.01ms;
+            }
+
+            .memory-card.flipped .card-back {
+                opacity: 0;
+            }
+
+            .memory-card .card-front {
+                transform: none !important;
+                opacity: 0;
+                transition: opacity 0.01ms;
+            }
+
+            .memory-card.flipped .card-front {
+                opacity: 1;
+            }
+        }
+
+        /* Visible Focus for Keyboard Navigation */
+        :focus-visible {
+            outline: 2px solid var(--robo);
+            outline-offset: 2px;
+        }
+
+        .memory-card:focus-visible {
+            outline: 3px solid var(--robo);
+            outline-offset: 4px;
+            transform: translateY(-4px);
+        }
+
+        .sort-btn:focus-visible {
+            outline: 3px solid currentColor;
+            outline-offset: 4px;
+        }
+
+        .difficulty-btn:focus-visible,
+        .btn:focus-visible {
+            outline: 3px solid var(--robo);
+            outline-offset: 3px;
+        }
+
+        /* Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 2rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--robo);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-weight: 600;
+            z-index: 1000;
+            transition: top 0.2s ease;
+            text-decoration: none;
+        }
+
+        .skip-link:focus {
+            top: 1rem;
+        }
+
+        /* Screen Reader Only */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           PHASE 3: EXTENDED RESULTS STATS
+           ═══════════════════════════════════════════════════════════ */
+
+        .results-stats-extended {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+        }
+
+        .result-stat-ext {
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .result-stat-ext-value {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .result-stat-ext-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .result-stat-ext.accuracy .result-stat-ext-value {
+            color: var(--veritas-light);
+        }
+
+        .result-stat-ext.streak .result-stat-ext-value {
+            color: var(--color-gold);
+        }
+
+        /* Share Button Style */
+        .btn-share {
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            color: var(--text-primary);
+        }
+
+        .btn-share:hover {
+            border-color: var(--robo);
+            background: rgba(59, 130, 246, 0.1);
+        }
     </style>
 </head>
 
 <body>
+    <!-- Skip Link for Accessibility -->
+    <a href="#memoryGrid" class="skip-link">Zum Spiel springen</a>
+
+    <!-- Screen Reader Announcer -->
+    <div id="srAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Sound Toggle Button -->
+    <button class="btn-sound" id="btnSound" aria-label="Sound ein/aus">
+        <span class="sound-on">🔊</span>
+        <span class="sound-off">🔇</span>
+    </button>
+
     <!-- Glow Orbs -->
     <div class="glow-orb glow-orb-veritas"></div>
     <div class="glow-orb glow-orb-robo"></div>
@@ -1581,6 +2334,9 @@
                     <span class="stat-value" id="pairsDisplay">0/8</span>
                 </div>
             </div>
+            <button class="btn-pause" id="btnPause" aria-label="Spiel pausieren">
+                <span>⏸️</span>
+            </button>
         </header>
 
         <!-- Game Timer (Phase 2) -->
@@ -1724,6 +2480,83 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════
+         TUTORIAL OVERLAY (Phase 3)
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="tutorial-overlay" id="tutorialOverlay">
+        <div class="tutorial-card">
+            <!-- Step 1: Finde Paare -->
+            <div class="tutorial-step active" data-step="1">
+                <div class="tutorial-visual">
+                    <div class="tutorial-cards-demo">
+                        <div class="demo-card"></div>
+                        <div class="demo-card"></div>
+                    </div>
+                </div>
+                <h3 class="tutorial-title">Finde Paare</h3>
+                <p class="tutorial-desc">Decke zwei Karten auf. Sind sie identisch? Match!</p>
+            </div>
+
+            <!-- Step 2: Erkenne KI -->
+            <div class="tutorial-step" data-step="2">
+                <div class="tutorial-visual">
+                    <div class="tutorial-sort-demo">
+                        <div class="demo-image">🖼️</div>
+                        <div class="demo-buttons">
+                            <div class="demo-btn-real">🦉 Real</div>
+                            <div class="demo-btn-ai">🤖 KI</div>
+                        </div>
+                    </div>
+                </div>
+                <h3 class="tutorial-title">Erkenne KI</h3>
+                <p class="tutorial-desc">Nach jedem Match: Ist das Bild echt oder KI-generiert?</p>
+            </div>
+
+            <!-- Step 3: Sammle Punkte -->
+            <div class="tutorial-step" data-step="3">
+                <div class="tutorial-visual">
+                    <div class="tutorial-score-demo">
+                        <div class="demo-score">+800</div>
+                        <div class="demo-streak">🔥 5er Serie!</div>
+                    </div>
+                </div>
+                <h3 class="tutorial-title">Sammle Punkte</h3>
+                <p class="tutorial-desc">Schnell + richtig = mehr Punkte. Bau deinen Streak auf!</p>
+            </div>
+
+            <!-- Navigation -->
+            <div class="tutorial-nav">
+                <div class="tutorial-dots">
+                    <span class="dot active" data-step="1"></span>
+                    <span class="dot" data-step="2"></span>
+                    <span class="dot" data-step="3"></span>
+                </div>
+                <button class="btn-tutorial-next" id="btnTutorialNext">Weiter</button>
+                <button class="btn-tutorial-start" id="btnTutorialStart">Los geht's!</button>
+            </div>
+
+            <button class="btn-tutorial-skip" id="btnTutorialSkip">Überspringen</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         PAUSE OVERLAY (Phase 3)
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="pause-overlay" id="pauseOverlay">
+        <div class="pause-card">
+            <h2 class="pause-title">Pausiert</h2>
+            <p class="pause-info">Timer gestoppt</p>
+            <div class="pause-actions">
+                <button class="btn btn-primary" id="btnResume">
+                    ▶️ Weiterspielen
+                </button>
+                <button class="btn btn-secondary" id="btnQuitGame">
+                    🏠 Beenden
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
          RESULTS SCREEN
          ═══════════════════════════════════════════════════════════ -->
     <div id="resultsScreen" class="screen results-screen">
@@ -1746,9 +2579,43 @@
                 </div>
             </div>
 
+            <!-- Extended Stats (Phase 3) -->
+            <div class="results-stats-extended">
+                <div class="result-stat-ext accuracy">
+                    <span class="result-stat-ext-value" id="resultAccuracy">0%</span>
+                    <span class="result-stat-ext-label">KI-Erkennung</span>
+                </div>
+                <div class="result-stat-ext streak">
+                    <span class="result-stat-ext-value" id="resultStreak">0</span>
+                    <span class="result-stat-ext-label">Max Streak</span>
+                </div>
+            </div>
+
+            <!-- Highscore Notice (Phase 3) -->
+            <div class="highscore-notice" id="highscoreNotice">
+                <div class="highscore-badge">🎉 NEUER HIGHSCORE!</div>
+                <div class="highscore-rank">Platz <span id="highscoreRank">1</span></div>
+                <div class="highscore-form">
+                    <input type="text" class="highscore-input" id="highscoreName" placeholder="Dein Name" maxlength="15">
+                    <button class="btn-save-score" id="btnSaveScore">Speichern</button>
+                </div>
+            </div>
+
+            <!-- Highscore List (Phase 3) -->
+            <div class="highscore-list">
+                <h3 class="highscore-title">🏆 Bestenliste</h3>
+                <div class="highscore-entries" id="highscoreEntries">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                <button class="btn-reset-scores" id="btnResetScores">Zurücksetzen</button>
+            </div>
+
             <div class="results-actions">
                 <button class="btn btn-primary" id="btnReplay">
                     🔄 Nochmal
+                </button>
+                <button class="btn btn-share" id="btnShare">
+                    📤 Teilen
                 </button>
                 <button class="btn btn-secondary" id="btnMenu">
                     🏠 Menü
@@ -1792,6 +2659,366 @@
                 20: 2000
             }
         };
+
+        // ═══════════════════════════════════════════════════════════
+        // PHASE 3: SOUND ENGINE
+        // ═══════════════════════════════════════════════════════════
+
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+                this.initialized = false;
+                this.volume = 0.5;
+            }
+
+            init() {
+                if (this.initialized) return;
+                try {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    this.initialized = true;
+                } catch (e) {
+                    console.warn('Web Audio API not supported');
+                    this.enabled = false;
+                }
+            }
+
+            playTone(frequency, duration = 0.1, type = 'sine', volume = this.volume) {
+                if (!this.enabled || !this.initialized || !this.ctx) return;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(frequency, this.ctx.currentTime);
+
+                gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(this.ctx.currentTime);
+                osc.stop(this.ctx.currentTime + duration);
+            }
+
+            playChord(frequencies, duration = 0.15, type = 'sine', volume = this.volume) {
+                frequencies.forEach((freq, i) => {
+                    setTimeout(() => {
+                        this.playTone(freq, duration, type, volume * 0.7);
+                    }, i * 50);
+                });
+            }
+
+            playSlide(startFreq, endFreq, duration = 0.15, type = 'sine') {
+                if (!this.enabled || !this.initialized || !this.ctx) return;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(startFreq, this.ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(endFreq, this.ctx.currentTime + duration);
+
+                gain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            }
+
+            toggle() {
+                this.enabled = !this.enabled;
+                return this.enabled;
+            }
+        }
+
+        const sound = new SoundEngine();
+
+        // Initialize sound on first user interaction (browser policy)
+        document.addEventListener('click', () => sound.init(), { once: true });
+        document.addEventListener('touchstart', () => sound.init(), { once: true });
+
+        const SOUNDS = {
+            // Cards
+            cardFlip: () => sound.playTone(800, 0.08, 'sine', 0.3),
+            cardMatch: () => sound.playChord([523, 659, 784], 0.15, 'sine', 0.4),
+            cardMismatch: () => sound.playChord([200, 180], 0.2, 'triangle', 0.25),
+
+            // Sorting
+            sortCorrect: () => sound.playChord([440, 554, 659, 880], 0.12, 'sine', 0.4),
+            sortWrong: () => sound.playChord([220, 200], 0.25, 'sawtooth', 0.3),
+            pairToBox: () => sound.playSlide(300, 600, 0.15, 'sine'),
+
+            // Streaks
+            streak5: () => sound.playChord([523, 659, 784], 0.12, 'sine', 0.5),
+            streak10: () => sound.playChord([523, 659, 784, 1047], 0.15, 'sine', 0.6),
+            streak15: () => sound.playChord([523, 659, 784, 1047, 1319], 0.18, 'sine', 0.65),
+            streak20: () => sound.playChord([523, 659, 784, 1047, 1319, 1568], 0.2, 'sine', 0.7),
+
+            // Timer
+            timerWarning: () => sound.playTone(440, 0.08, 'sine', 0.2),
+            timerCritical: () => sound.playTone(880, 0.05, 'square', 0.2),
+
+            // Game State
+            gameStart: () => sound.playChord([262, 330, 392, 523], 0.12, 'sine', 0.4),
+            gameEnd: () => sound.playChord([523, 392, 330, 262], 0.2, 'sine', 0.4),
+            newHighscore: () => {
+                setTimeout(() => sound.playChord([523, 659], 0.15), 0);
+                setTimeout(() => sound.playChord([784, 1047], 0.15), 200);
+                setTimeout(() => sound.playChord([1319, 1568], 0.2), 400);
+            },
+
+            // UI
+            buttonClick: () => sound.playTone(800, 0.05, 'sine', 0.15),
+        };
+
+        // ═══════════════════════════════════════════════════════════
+        // PHASE 3: HIGHSCORE SYSTEM
+        // ═══════════════════════════════════════════════════════════
+
+        const HS_KEY = 'forRealScan_memory_highscores_v1';
+        const MAX_HIGHSCORES = 10;
+
+        function getHighscores() {
+            const stored = localStorage.getItem(HS_KEY);
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function saveHighscore(name, scoreVal, diff) {
+            const highscores = getHighscores();
+
+            highscores.push({
+                name: name.substring(0, 15),
+                score: scoreVal,
+                difficulty: diff,
+                accuracy: window.gameResults?.accuracy || 0,
+                date: new Date().toISOString()
+            });
+
+            // Sort by score (descending)
+            highscores.sort((a, b) => b.score - a.score);
+
+            // Keep only top 10
+            const trimmed = highscores.slice(0, MAX_HIGHSCORES);
+
+            localStorage.setItem(HS_KEY, JSON.stringify(trimmed));
+            return trimmed;
+        }
+
+        function isHighscore(scoreVal) {
+            const highscores = getHighscores();
+            if (highscores.length < MAX_HIGHSCORES) return true;
+            return scoreVal > highscores[highscores.length - 1].score;
+        }
+
+        function getHighscoreRank(scoreVal) {
+            const highscores = getHighscores();
+            const rank = highscores.findIndex(hs => scoreVal > hs.score);
+            return rank === -1 ? highscores.length + 1 : rank + 1;
+        }
+
+        function resetHighscores() {
+            if (confirm('Alle Highscores löschen?')) {
+                localStorage.removeItem(HS_KEY);
+                renderHighscores();
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function renderHighscores(highlightScore = null) {
+            const highscores = getHighscores();
+            const container = document.getElementById('highscoreEntries');
+
+            if (highscores.length === 0) {
+                container.innerHTML = '<div class="highscore-empty">Noch keine Highscores. Sei der Erste!</div>';
+                return;
+            }
+
+            container.innerHTML = highscores.map((hs, index) => {
+                const isHighlight = highlightScore && hs.score === highlightScore;
+                const diffLabel = { easy: 'E', medium: 'M', hard: 'H' }[hs.difficulty] || '';
+
+                return `
+                    <div class="highscore-entry ${isHighlight ? 'highlight' : ''}">
+                        <span class="entry-rank">${index + 1}.</span>
+                        <span class="entry-name">${escapeHtml(hs.name)}</span>
+                        <span class="entry-score">
+                            ${hs.score.toLocaleString()}
+                            <span class="entry-difficulty">${diffLabel}</span>
+                        </span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // PHASE 3: TUTORIAL SYSTEM
+        // ═══════════════════════════════════════════════════════════
+
+        const TUTORIAL_KEY = 'forRealScan_memory_tutorial_v1';
+        let currentTutorialStep = 1;
+        const totalTutorialSteps = 3;
+
+        function checkTutorial() {
+            if (!localStorage.getItem(TUTORIAL_KEY)) {
+                showTutorial();
+            }
+        }
+
+        function showTutorial() {
+            currentTutorialStep = 1;
+            updateTutorialStep();
+            document.getElementById('tutorialOverlay').classList.add('active');
+        }
+
+        function hideTutorial() {
+            document.getElementById('tutorialOverlay').classList.remove('active');
+            localStorage.setItem(TUTORIAL_KEY, 'completed');
+        }
+
+        function updateTutorialStep() {
+            // Update Steps
+            document.querySelectorAll('.tutorial-step').forEach(step => {
+                step.classList.remove('active');
+                if (parseInt(step.dataset.step) === currentTutorialStep) {
+                    step.classList.add('active');
+                }
+            });
+
+            // Update Dots
+            document.querySelectorAll('.tutorial-dots .dot').forEach(dot => {
+                dot.classList.remove('active');
+                if (parseInt(dot.dataset.step) === currentTutorialStep) {
+                    dot.classList.add('active');
+                }
+            });
+
+            // Update Buttons
+            const btnNext = document.getElementById('btnTutorialNext');
+            const btnStart = document.getElementById('btnTutorialStart');
+
+            if (currentTutorialStep === totalTutorialSteps) {
+                btnNext.style.display = 'none';
+                btnStart.style.display = 'block';
+            } else {
+                btnNext.style.display = 'block';
+                btnStart.style.display = 'none';
+            }
+        }
+
+        function nextTutorialStep() {
+            if (currentTutorialStep < totalTutorialSteps) {
+                currentTutorialStep++;
+                updateTutorialStep();
+                SOUNDS.buttonClick();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // PHASE 3: SHARE FUNCTIONALITY
+        // ═══════════════════════════════════════════════════════════
+
+        async function shareResults() {
+            const results = window.gameResults;
+            if (!results) return;
+
+            const shareText = `🧠 Memory Scan: ${results.score.toLocaleString()} Punkte!\n` +
+                              `🎯 ${results.accuracy}% KI-Erkennung\n` +
+                              `🔥 ${results.maxStreak}er Streak\n\n` +
+                              `Schaffst du mehr?`;
+
+            // Try native Share API
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Memory Scan Ergebnis',
+                        text: shareText,
+                        url: window.location.href
+                    });
+                    return;
+                } catch (e) {
+                    // User cancelled or not supported
+                }
+            }
+
+            // Fallback: Copy to Clipboard
+            try {
+                await navigator.clipboard.writeText(shareText + `\nSpiel: ${window.location.href}`);
+                showToast('Ergebnis kopiert!');
+            } catch (e) {
+                showToast('Teilen fehlgeschlagen');
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('active'), 10);
+            setTimeout(() => {
+                toast.classList.remove('active');
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // PHASE 3: PAUSE SYSTEM
+        // ═══════════════════════════════════════════════════════════
+
+        let isPaused = false;
+
+        function pauseGame() {
+            if (isPaused) return;
+            isPaused = true;
+
+            pauseGameTimer();
+            stopSortTimer();
+
+            document.getElementById('pauseOverlay').classList.add('active');
+        }
+
+        function resumeGame() {
+            if (!isPaused) return;
+            isPaused = false;
+
+            document.getElementById('pauseOverlay').classList.remove('active');
+
+            // Only resume timer if not in sort modal
+            if (!sortEls.modal.classList.contains('active')) {
+                resumeGameTimer();
+            }
+        }
+
+        function quitGame() {
+            isPaused = false;
+            document.getElementById('pauseOverlay').classList.remove('active');
+            pauseGameTimer();
+            stopSortTimer();
+            showScreen('start');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // PHASE 3: ACCESSIBILITY HELPERS
+        // ═══════════════════════════════════════════════════════════
+
+        function announce(message) {
+            const announcer = document.getElementById('srAnnouncer');
+            announcer.textContent = '';
+            setTimeout(() => {
+                announcer.textContent = message;
+            }, 100);
+        }
 
         // ═══════════════════════════════════════════════════════════
         // PHASE 2: ERWEITERTER STATE
@@ -1903,6 +3130,91 @@
                     handleSort('ai');
                 }
             });
+
+            // ═══ PHASE 3: SOUND TOGGLE ═══
+            const btnSound = document.getElementById('btnSound');
+            const soundOn = btnSound.querySelector('.sound-on');
+            const soundOff = btnSound.querySelector('.sound-off');
+
+            btnSound.addEventListener('click', () => {
+                const enabled = sound.toggle();
+                soundOn.style.display = enabled ? 'block' : 'none';
+                soundOff.style.display = enabled ? 'none' : 'block';
+                localStorage.setItem('forRealScan_memory_sound', enabled ? 'on' : 'off');
+            });
+
+            // Load saved sound preference
+            const savedSound = localStorage.getItem('forRealScan_memory_sound');
+            if (savedSound === 'off') {
+                sound.enabled = false;
+                soundOn.style.display = 'none';
+                soundOff.style.display = 'block';
+            }
+
+            // ═══ PHASE 3: TUTORIAL ═══
+            document.getElementById('btnTutorialNext').addEventListener('click', nextTutorialStep);
+            document.getElementById('btnTutorialStart').addEventListener('click', () => {
+                hideTutorial();
+                SOUNDS.gameStart();
+            });
+            document.getElementById('btnTutorialSkip').addEventListener('click', hideTutorial);
+
+            document.querySelectorAll('.tutorial-dots .dot').forEach(dot => {
+                dot.addEventListener('click', () => {
+                    currentTutorialStep = parseInt(dot.dataset.step);
+                    updateTutorialStep();
+                });
+            });
+
+            // ═══ PHASE 3: PAUSE ═══
+            document.getElementById('btnPause').addEventListener('click', pauseGame);
+            document.getElementById('btnResume').addEventListener('click', resumeGame);
+            document.getElementById('btnQuitGame').addEventListener('click', quitGame);
+
+            // ESC key for pause
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (isPaused) {
+                        resumeGame();
+                    } else if (els.gameScreen.classList.contains('active')) {
+                        pauseGame();
+                    }
+                }
+            });
+
+            // Tab visibility change = auto-pause
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && els.gameScreen.classList.contains('active') && !isPaused) {
+                    pauseGame();
+                }
+            });
+
+            // ═══ PHASE 3: HIGHSCORES ═══
+            document.getElementById('btnSaveScore').addEventListener('click', () => {
+                const nameInput = document.getElementById('highscoreName');
+                const name = nameInput.value.trim() || 'Anonym';
+
+                saveHighscore(name, score, difficulty);
+                renderHighscores(score);
+
+                // Hide form
+                document.getElementById('highscoreNotice').style.display = 'none';
+                SOUNDS.buttonClick();
+            });
+
+            document.getElementById('highscoreName').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('btnSaveScore').click();
+                }
+            });
+
+            document.getElementById('btnResetScores').addEventListener('click', resetHighscores);
+
+            // ═══ PHASE 3: SHARE ═══
+            document.getElementById('btnShare').addEventListener('click', shareResults);
+
+            // Check tutorial on load
+            checkTutorial();
         }
 
         // ═══════════════════════════════════════════════════════════
@@ -1945,6 +3257,7 @@
             currentMatchedPair = null;
             gameStartTime = Date.now();
             gameTimeLeft = config.gameTime;
+            isPaused = false;
 
             // Generate & Render Cards
             cards = generateCards(totalPairs);
@@ -1959,6 +3272,9 @@
 
             // Start Game Timer
             startGameTimer();
+
+            // Phase 3: Play start sound
+            SOUNDS.gameStart();
         }
 
         function setupSortBoxes(config) {
@@ -2065,6 +3381,9 @@
             cardEl.classList.add('flipped');
             flippedCards.push(cardEl);
 
+            // Phase 3: Play flip sound
+            SOUNDS.cardFlip();
+
             // Check for match when 2 cards are flipped
             if (flippedCards.length === 2) {
                 isLocked = true;
@@ -2092,6 +3411,9 @@
                 card1.classList.add('matched');
                 card2.classList.add('matched');
 
+                // Phase 3: Play match sound
+                SOUNDS.cardMatch();
+
                 // Score für Match
                 score += POINTS.match;
                 matchedPairs++;
@@ -2111,6 +3433,9 @@
                 // Update Display
                 updateDisplay();
 
+                // Phase 3: Announce for screen readers
+                announce(`Paar gefunden! Plus ${POINTS.match} Punkte.`);
+
                 // Pause Game Timer
                 pauseGameTimer();
 
@@ -2123,6 +3448,9 @@
         }
 
         function handleMismatch(card1, card2) {
+            // Phase 3: Play mismatch sound
+            SOUNDS.cardMismatch();
+
             // Shake animation
             setTimeout(() => {
                 card1.classList.add('mismatch');
@@ -2271,6 +3599,10 @@
                 // ═══ RICHTIG ═══
                 chosenBtn.classList.add('correct');
 
+                // Phase 3: Play correct sound
+                SOUNDS.sortCorrect();
+                SOUNDS.pairToBox();
+
                 // Score berechnen
                 const timeBonus = Math.floor(sortTimeLeft * POINTS.timeBonus);
                 let sortScore = POINTS.sortCorrect + timeBonus;
@@ -2280,15 +3612,23 @@
                 maxStreak = Math.max(maxStreak, streak);
                 correctSorts++;
 
-                // Streak Milestone Bonus
+                // Streak Milestone Bonus + Sound
                 if (POINTS.streakBonus[streak]) {
                     sortScore += POINTS.streakBonus[streak];
+                    // Phase 3: Play streak milestone sounds
+                    if (streak === 5) SOUNDS.streak5();
+                    else if (streak === 10) SOUNDS.streak10();
+                    else if (streak === 15) SOUNDS.streak15();
+                    else if (streak === 20) SOUNDS.streak20();
                 }
 
                 score += sortScore;
 
                 // Show Feedback
                 showSortFeedback(true, sortScore);
+
+                // Phase 3: Announce for screen readers
+                announce(`Richtig! Das war ${pair.type === 'real' ? 'ein echtes Foto' : 'KI-generiert'}. Plus ${sortScore} Punkte.`);
 
                 // Update Sort Box
                 if (pair.type === 'real') {
@@ -2303,6 +3643,9 @@
                 // ═══ FALSCH ═══
                 chosenBtn.classList.add('wrong');
 
+                // Phase 3: Play wrong sound
+                SOUNDS.sortWrong();
+
                 // Zeige korrekte Antwort
                 setTimeout(() => {
                     const correctBtn = pair.type === 'real' ? sortEls.btnReal : sortEls.btnAi;
@@ -2316,6 +3659,9 @@
                 // Show Feedback
                 const revealText = pair.type === 'real' ? 'ein echtes Foto' : 'KI-generiert';
                 showSortFeedback(false, 0, revealText);
+
+                // Phase 3: Announce for screen readers
+                announce(`Falsch. Das war ${revealText}.`);
 
                 // Trotzdem in korrekter Box sortieren
                 if (pair.type === 'real') {
@@ -2473,8 +3819,11 @@
             els.resultPairs.textContent = `${matchedPairs}/${totalPairs}`;
             els.resultTime.textContent = timeString;
 
-            // Erweiterte Stats (für Phase 3 Results Screen)
-            // Speichere für später:
+            // Phase 3: Extended stats
+            document.getElementById('resultAccuracy').textContent = `${accuracy}%`;
+            document.getElementById('resultStreak').textContent = maxStreak;
+
+            // Speichere für Share und Highscores
             window.gameResults = {
                 score,
                 pairs: matchedPairs,
@@ -2489,6 +3838,27 @@
                 difficulty,
                 timeRanOut
             };
+
+            // Phase 3: Highscore check
+            const newHighscore = isHighscore(score);
+            const highscoreNotice = document.getElementById('highscoreNotice');
+            const highscoreInput = document.getElementById('highscoreName');
+
+            if (newHighscore && score > 0) {
+                highscoreNotice.style.display = 'block';
+                document.getElementById('highscoreRank').textContent = getHighscoreRank(score);
+                highscoreInput.value = '';
+                SOUNDS.newHighscore();
+            } else {
+                highscoreNotice.style.display = 'none';
+                SOUNDS.gameEnd();
+            }
+
+            // Phase 3: Render highscore list
+            renderHighscores();
+
+            // Phase 3: Announce for screen readers
+            announce(`Spiel beendet. Endpunktzahl: ${score}. ${correctSorts} von ${totalPairs} richtig erkannt.`);
 
             setTimeout(() => {
                 showScreen('results');
