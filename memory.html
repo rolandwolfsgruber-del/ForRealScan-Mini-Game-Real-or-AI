@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Scan | ForRealScan</title>
+
+    <!-- Inter Tight Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ═══════════════════════════════════════════════════════════
+           CSS VARIABLES (Design System)
+           ═══════════════════════════════════════════════════════════ */
+        :root {
+            /* Brand Colors */
+            --veritas: hsl(142, 76%, 36%);
+            --veritas-light: hsl(142, 76%, 45%);
+            --veritas-glow: hsl(142, 76%, 55%);
+
+            --robo: hsl(210, 100%, 56%);
+            --robo-light: hsl(210, 100%, 65%);
+            --robo-glow: hsl(210, 100%, 75%);
+
+            /* Backgrounds */
+            --bg-primary: #0a0d1a;
+            --bg-secondary: #0f1424;
+            --bg-tertiary: #151b2e;
+            --bg-card: rgba(15, 20, 36, 0.85);
+
+            /* Text */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+
+            /* Semantic */
+            --color-success: var(--veritas);
+            --color-error: hsl(0, 84%, 60%);
+            --color-warning: hsl(38, 92%, 50%);
+            --color-gold: hsl(45, 93%, 47%);
+
+            /* Glass Effect */
+            --glass-bg: rgba(15, 20, 36, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-hover: rgba(255, 255, 255, 0.15);
+
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-veritas: 0 0 30px rgba(34, 197, 94, 0.3);
+            --shadow-robo: 0 0 30px rgba(59, 130, 246, 0.3);
+
+            /* Radius */
+            --radius-sm: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.25rem;
+            --radius-2xl: 1.5rem;
+
+            /* Timing */
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --duration-fast: 200ms;
+            --duration-normal: 300ms;
+            --duration-flip: 500ms;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           BASE STYLES
+           ═══════════════════════════════════════════════════════════ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        /* Dot Pattern Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           GLOW ORBS
+           ═══════════════════════════════════════════════════════════ */
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            animation: pulse-glow 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .glow-orb-veritas {
+            width: 400px;
+            height: 400px;
+            background: var(--veritas);
+            top: -100px;
+            left: -100px;
+            opacity: 0.15;
+        }
+
+        .glow-orb-robo {
+            width: 350px;
+            height: 350px;
+            background: var(--robo);
+            bottom: -50px;
+            right: -100px;
+            opacity: 0.12;
+            animation-delay: 3s;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.15; transform: scale(1); }
+            50% { opacity: 0.25; transform: scale(1.05); }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           SCREENS (Show/Hide)
+           ═══════════════════════════════════════════════════════════ */
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1.5rem 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           START SCREEN
+           ═══════════════════════════════════════════════════════════ */
+        .start-screen {
+            justify-content: center;
+            gap: 2rem;
+            padding: 2rem 1.5rem;
+            animation: fade-in-up 0.6s ease-out;
+        }
+
+        @keyframes fade-in-up {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .start-header {
+            text-align: center;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-img {
+            width: 80px;
+            height: auto;
+            filter: drop-shadow(0 0 20px rgba(34, 197, 94, 0.3));
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 30px rgba(34, 197, 94, 0.5));
+        }
+
+        .start-title {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--veritas) 0%, var(--robo) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.25rem;
+        }
+
+        .start-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        /* Difficulty Buttons */
+        .difficulty-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .difficulty-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 1.25rem;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all var(--duration-normal) var(--ease-smooth);
+            font-family: inherit;
+        }
+
+        .difficulty-btn:hover {
+            border-color: var(--glass-border-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .difficulty-btn[data-difficulty="easy"]:hover {
+            border-color: var(--veritas);
+            box-shadow: var(--shadow-veritas);
+        }
+
+        .difficulty-btn[data-difficulty="medium"]:hover {
+            border-color: var(--robo);
+            box-shadow: var(--shadow-robo);
+        }
+
+        .difficulty-btn[data-difficulty="hard"]:hover {
+            border-color: var(--color-warning);
+            box-shadow: 0 0 30px rgba(234, 179, 8, 0.3);
+        }
+
+        .diff-icon {
+            font-size: 2rem;
+        }
+
+        .diff-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .diff-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           GAME SCREEN
+           ═══════════════════════════════════════════════════════════ */
+        .game-screen {
+            padding-top: 1rem;
+        }
+
+        /* Game Header */
+        .game-header {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 1.5rem;
+        }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.3));
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        /* Memory Grid */
+        .grid-container {
+            width: 100%;
+            max-width: 600px;
+            padding: 1rem;
+        }
+
+        .memory-grid {
+            display: grid;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .memory-grid[data-difficulty="easy"] {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .memory-grid[data-difficulty="medium"] {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .memory-grid[data-difficulty="hard"] {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        @media (max-width: 640px) {
+            .memory-grid {
+                gap: 0.5rem;
+            }
+
+            .memory-grid[data-difficulty="hard"] {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .header-stats {
+                gap: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1rem;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           MEMORY CARD
+           ═══════════════════════════════════════════════════════════ */
+        .card-container {
+            perspective: 1000px;
+        }
+
+        .memory-card {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform var(--duration-fast) var(--ease-smooth);
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform var(--duration-flip) var(--ease-bounce);
+        }
+
+        .memory-card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 2px solid var(--glass-border);
+        }
+
+        /* Card Back (Question Mark Side) */
+        .card-back {
+            background: linear-gradient(145deg, var(--bg-tertiary), var(--bg-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-pattern {
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 30% 30%, var(--veritas-glow) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, var(--robo-glow) 0%, transparent 50%);
+            opacity: 0.05;
+        }
+
+        .card-logo {
+            font-size: 2rem;
+            color: var(--text-muted);
+            z-index: 1;
+        }
+
+        /* Card Front (Revealed Side) */
+        .card-front {
+            transform: rotateY(180deg);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Placeholder for Development */
+        .placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .placeholder-icon {
+            font-size: 2rem;
+        }
+
+        .placeholder-text {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+        }
+
+        /* Card Hover State */
+        .memory-card:hover:not(.flipped):not(.matched) {
+            transform: translateY(-4px);
+        }
+
+        .memory-card:hover:not(.flipped):not(.matched) .card-back {
+            border-color: var(--glass-border-hover);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Matched State */
+        .memory-card.matched {
+            pointer-events: none;
+        }
+
+        .memory-card.matched .card-inner {
+            opacity: 0.6;
+            transform: rotateY(180deg) scale(0.95);
+        }
+
+        /* Mismatch Shake Animation */
+        .memory-card.mismatch {
+            animation: shake 0.5s var(--ease-smooth);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           RESULTS SCREEN
+           ═══════════════════════════════════════════════════════════ */
+        .results-screen {
+            justify-content: center;
+            animation: fade-in-up 0.6s ease-out;
+        }
+
+        .results-content {
+            max-width: 400px;
+            width: 100%;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .results-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .score-display {
+            margin: 2rem 0;
+        }
+
+        .final-score {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--veritas), var(--robo));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .results-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 2rem 0;
+        }
+
+        .result-stat {
+            text-align: center;
+        }
+
+        .result-stat-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .result-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Results Actions */
+        .results-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-smooth);
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--veritas), var(--robo));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--glass-border-hover);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           RESPONSIVE ADJUSTMENTS
+           ═══════════════════════════════════════════════════════════ */
+        @media (max-width: 640px) {
+            .start-title {
+                font-size: 1.6rem;
+            }
+
+            .logo-img {
+                width: 60px;
+            }
+
+            .difficulty-options {
+                max-width: 280px;
+            }
+
+            .difficulty-btn {
+                padding: 1rem;
+            }
+
+            .diff-icon {
+                font-size: 1.5rem;
+            }
+
+            .diff-name {
+                font-size: 1rem;
+            }
+
+            .results-content {
+                padding: 1.5rem;
+            }
+
+            .final-score {
+                font-size: 3rem;
+            }
+
+            .results-stats {
+                gap: 2rem;
+            }
+
+            .result-stat-value {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Glow Orbs -->
+    <div class="glow-orb glow-orb-veritas"></div>
+    <div class="glow-orb glow-orb-robo"></div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         START SCREEN
+         ═══════════════════════════════════════════════════════════ -->
+    <div id="startScreen" class="screen start-screen active">
+        <header class="start-header">
+            <div class="logo-container">
+                <img src="Logo_Master-removebg-preview.png" alt="ForRealScan Logo" class="logo-img">
+                <h1 class="start-title">Memory Scan</h1>
+                <p class="start-subtitle">Finde Paare. Erkenne KI.</p>
+            </div>
+        </header>
+
+        <div class="difficulty-options">
+            <button class="difficulty-btn" data-difficulty="easy">
+                <span class="diff-icon">🌱</span>
+                <span class="diff-name">Einsteiger</span>
+                <span class="diff-desc">4×3 Grid · 6 Paare</span>
+            </button>
+            <button class="difficulty-btn" data-difficulty="medium">
+                <span class="diff-icon">🎯</span>
+                <span class="diff-name">Standard</span>
+                <span class="diff-desc">4×4 Grid · 8 Paare</span>
+            </button>
+            <button class="difficulty-btn" data-difficulty="hard">
+                <span class="diff-icon">🔥</span>
+                <span class="diff-name">Experte</span>
+                <span class="diff-desc">6×4 Grid · 12 Paare</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         GAME SCREEN
+         ═══════════════════════════════════════════════════════════ -->
+    <div id="gameScreen" class="screen game-screen">
+        <header class="game-header">
+            <img src="Logo_Master-removebg-preview.png" alt="Logo" class="header-logo">
+            <div class="header-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Score</span>
+                    <span class="stat-value" id="scoreDisplay">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Paare</span>
+                    <span class="stat-value" id="pairsDisplay">0/8</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid-container">
+            <div class="memory-grid" id="memoryGrid" data-difficulty="medium">
+                <!-- Cards will be generated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         RESULTS SCREEN
+         ═══════════════════════════════════════════════════════════ -->
+    <div id="resultsScreen" class="screen results-screen">
+        <div class="results-content">
+            <h2 class="results-title">Spiel beendet</h2>
+
+            <div class="score-display">
+                <div class="final-score" id="finalScore">0</div>
+                <div class="score-label">Punkte</div>
+            </div>
+
+            <div class="results-stats">
+                <div class="result-stat">
+                    <span class="result-stat-value" id="resultPairs">8/8</span>
+                    <span class="result-stat-label">Paare</span>
+                </div>
+                <div class="result-stat">
+                    <span class="result-stat-value" id="resultTime">1:24</span>
+                    <span class="result-stat-label">Zeit</span>
+                </div>
+            </div>
+
+            <div class="results-actions">
+                <button class="btn btn-primary" id="btnReplay">
+                    🔄 Nochmal
+                </button>
+                <button class="btn btn-secondary" id="btnMenu">
+                    🏠 Menü
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════
+        // GAME CONFIGURATION
+        // ═══════════════════════════════════════════════════════════
+
+        const CONFIG = {
+            easy:   { cols: 4, rows: 3, pairs: 6 },
+            medium: { cols: 4, rows: 4, pairs: 8 },
+            hard:   { cols: 6, rows: 4, pairs: 12 }
+        };
+
+        const POINTS = {
+            match: 500,
+            timeBonus: 10  // pro verbleibende Sekunde (für später)
+        };
+
+        // ═══════════════════════════════════════════════════════════
+        // GAME STATE
+        // ═══════════════════════════════════════════════════════════
+
+        let difficulty = 'medium';
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let totalPairs = 8;
+        let score = 0;
+        let isLocked = false;  // Verhindert Klicks während Animation
+        let gameStartTime = null;
+        let gameEndTime = null;
+
+        // ═══════════════════════════════════════════════════════════
+        // DOM REFERENCES
+        // ═══════════════════════════════════════════════════════════
+
+        const els = {
+            startScreen: document.getElementById('startScreen'),
+            gameScreen: document.getElementById('gameScreen'),
+            resultsScreen: document.getElementById('resultsScreen'),
+            memoryGrid: document.getElementById('memoryGrid'),
+            scoreDisplay: document.getElementById('scoreDisplay'),
+            pairsDisplay: document.getElementById('pairsDisplay'),
+            finalScore: document.getElementById('finalScore'),
+            resultPairs: document.getElementById('resultPairs'),
+            resultTime: document.getElementById('resultTime'),
+            btnReplay: document.getElementById('btnReplay'),
+            btnMenu: document.getElementById('btnMenu'),
+        };
+
+        // ═══════════════════════════════════════════════════════════
+        // INITIALIZATION
+        // ═══════════════════════════════════════════════════════════
+
+        function init() {
+            // Difficulty Buttons
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    difficulty = btn.dataset.difficulty;
+                    startGame();
+                });
+            });
+
+            // Results Buttons
+            els.btnReplay.addEventListener('click', () => startGame());
+            els.btnMenu.addEventListener('click', () => showScreen('start'));
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // SCREEN MANAGEMENT
+        // ═══════════════════════════════════════════════════════════
+
+        function showScreen(screen) {
+            els.startScreen.classList.remove('active');
+            els.gameScreen.classList.remove('active');
+            els.resultsScreen.classList.remove('active');
+
+            if (screen === 'start') {
+                els.startScreen.classList.add('active');
+            } else if (screen === 'game') {
+                els.gameScreen.classList.add('active');
+            } else if (screen === 'results') {
+                els.resultsScreen.classList.add('active');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // GAME SETUP
+        // ═══════════════════════════════════════════════════════════
+
+        function startGame() {
+            // Reset State
+            const config = CONFIG[difficulty];
+            totalPairs = config.pairs;
+            matchedPairs = 0;
+            score = 0;
+            flippedCards = [];
+            isLocked = false;
+            gameStartTime = Date.now();
+
+            // Generate Cards
+            cards = generateCards(totalPairs);
+
+            // Render Grid
+            renderGrid(config);
+
+            // Update UI
+            updateDisplay();
+            showScreen('game');
+        }
+
+        function generateCards(pairCount) {
+            const cardData = [];
+
+            // Erstelle Paare (halb Real, halb AI)
+            const realCount = Math.ceil(pairCount / 2);
+            const aiCount = pairCount - realCount;
+
+            // Real-Karten
+            for (let i = 0; i < realCount; i++) {
+                const pairId = `real-${i + 1}`;
+                cardData.push({ pairId, type: 'real', index: i + 1 });
+                cardData.push({ pairId, type: 'real', index: i + 1 });
+            }
+
+            // AI-Karten
+            for (let i = 0; i < aiCount; i++) {
+                const pairId = `ai-${i + 1}`;
+                cardData.push({ pairId, type: 'ai', index: i + 1 });
+                cardData.push({ pairId, type: 'ai', index: i + 1 });
+            }
+
+            // Shuffle
+            return shuffleArray(cardData);
+        }
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function renderGrid(config) {
+            els.memoryGrid.innerHTML = '';
+            els.memoryGrid.dataset.difficulty = difficulty;
+
+            cards.forEach((card, index) => {
+                const cardEl = createCardElement(card, index);
+                els.memoryGrid.appendChild(cardEl);
+            });
+        }
+
+        function createCardElement(card, index) {
+            const container = document.createElement('div');
+            container.className = 'card-container';
+
+            const isReal = card.type === 'real';
+            const bgColor = isReal
+                ? 'linear-gradient(135deg, #1a4d2e, #0d2818)'
+                : 'linear-gradient(135deg, #1e3a5f, #0f1d30)';
+            const icon = isReal ? '🦉' : '🤖';
+            const label = isReal ? `REAL ${card.index}` : `AI ${card.index}`;
+
+            container.innerHTML = `
+                <div class="memory-card" data-index="${index}" data-pair-id="${card.pairId}">
+                    <div class="card-inner">
+                        <div class="card-back">
+                            <div class="card-pattern"></div>
+                            <span class="card-logo">?</span>
+                        </div>
+                        <div class="card-front" style="background: ${bgColor};">
+                            <div class="placeholder">
+                                <span class="placeholder-icon">${icon}</span>
+                                <span class="placeholder-text">${label}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const memoryCard = container.querySelector('.memory-card');
+            memoryCard.addEventListener('click', () => handleCardClick(memoryCard));
+
+            return container;
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // GAME LOGIC
+        // ═══════════════════════════════════════════════════════════
+
+        function handleCardClick(cardEl) {
+            // Ignore if locked, already flipped, or matched
+            if (isLocked) return;
+            if (cardEl.classList.contains('flipped')) return;
+            if (cardEl.classList.contains('matched')) return;
+
+            // Flip card
+            cardEl.classList.add('flipped');
+            flippedCards.push(cardEl);
+
+            // Check for match when 2 cards are flipped
+            if (flippedCards.length === 2) {
+                isLocked = true;
+                checkForMatch();
+            }
+        }
+
+        function checkForMatch() {
+            const [card1, card2] = flippedCards;
+            const isMatch = card1.dataset.pairId === card2.dataset.pairId;
+
+            if (isMatch) {
+                handleMatch(card1, card2);
+            } else {
+                handleMismatch(card1, card2);
+            }
+        }
+
+        function handleMatch(card1, card2) {
+            // Mark as matched
+            setTimeout(() => {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+
+                // Update score
+                score += POINTS.match;
+                matchedPairs++;
+
+                // Reset
+                flippedCards = [];
+                isLocked = false;
+
+                // Update display
+                updateDisplay();
+
+                // Check for game end
+                if (matchedPairs === totalPairs) {
+                    endGame();
+                }
+            }, 300);
+        }
+
+        function handleMismatch(card1, card2) {
+            // Shake animation
+            setTimeout(() => {
+                card1.classList.add('mismatch');
+                card2.classList.add('mismatch');
+
+                // Flip back
+                setTimeout(() => {
+                    card1.classList.remove('flipped', 'mismatch');
+                    card2.classList.remove('flipped', 'mismatch');
+                    flippedCards = [];
+                    isLocked = false;
+                }, 800);
+            }, 600);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // UI UPDATES
+        // ═══════════════════════════════════════════════════════════
+
+        function updateDisplay() {
+            els.scoreDisplay.textContent = score.toLocaleString();
+            els.pairsDisplay.textContent = `${matchedPairs}/${totalPairs}`;
+        }
+
+        function endGame() {
+            gameEndTime = Date.now();
+            const timeTaken = Math.floor((gameEndTime - gameStartTime) / 1000);
+            const minutes = Math.floor(timeTaken / 60);
+            const seconds = timeTaken % 60;
+            const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            // Update results
+            els.finalScore.textContent = score.toLocaleString();
+            els.resultPairs.textContent = `${matchedPairs}/${totalPairs}`;
+            els.resultTime.textContent = timeString;
+
+            // Show results after short delay
+            setTimeout(() => {
+                showScreen('results');
+            }, 500);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // START
+        // ═══════════════════════════════════════════════════════════
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>
