@@ -2276,44 +2276,99 @@
         }
 
         /* ═══════════════════════════════════════════════════════════
-           LANGUAGE SWITCHER
+           LANGUAGE DROPDOWN
            ═══════════════════════════════════════════════════════════ */
-        .language-switcher {
-            display: flex;
-            gap: 0.25rem;
-            padding: 0.25rem;
-            background: var(--glass-bg);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--glass-border);
-        }
-
-        .lang-btn {
-            padding: 0.4rem 0.6rem;
-            background: transparent;
-            border: none;
-            border-radius: var(--radius-md);
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .lang-btn:hover {
-            color: var(--text-primary);
-            background: var(--bg-tertiary);
-        }
-
-        .lang-btn.active {
-            color: var(--text-primary);
-            background: linear-gradient(135deg, var(--veritas), var(--robo));
-        }
-
         .top-lang-bar {
             position: fixed;
             top: 1rem;
             left: 1rem;
             z-index: 50;
+        }
+
+        .lang-dropdown {
+            position: relative;
+        }
+
+        .lang-trigger {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lang-trigger:hover {
+            border-color: var(--glass-border-hover);
+            background: rgba(17, 24, 39, 0.9);
+        }
+
+        .lang-trigger svg {
+            width: 18px;
+            height: 18px;
+            opacity: 0.7;
+        }
+
+        .lang-trigger .lang-code {
+            min-width: 1.5rem;
+            text-align: center;
+        }
+
+        .lang-menu {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            left: 0;
+            min-width: 140px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 0.375rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .lang-menu.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .lang-option {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .lang-option:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .lang-option.active {
+            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--veritas), var(--robo));
         }
     </style>
 </head>
@@ -2634,14 +2689,24 @@
         }
     </script>
 
-    <!-- Language Switcher -->
+    <!-- Language Dropdown -->
     <div class="top-lang-bar">
-        <div class="language-switcher">
-            <button class="lang-btn" data-lang="de">DE</button>
-            <button class="lang-btn" data-lang="en">EN</button>
-            <button class="lang-btn" data-lang="it">IT</button>
-            <button class="lang-btn" data-lang="es">ES</button>
-            <button class="lang-btn" data-lang="fr">FR</button>
+        <div class="lang-dropdown">
+            <button class="lang-trigger" id="langTrigger">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                <span class="lang-code" id="currentLangCode">DE</span>
+            </button>
+            <div class="lang-menu" id="langMenu">
+                <button class="lang-option" data-lang="de">Deutsch</button>
+                <button class="lang-option" data-lang="en">English</button>
+                <button class="lang-option" data-lang="it">Italiano</button>
+                <button class="lang-option" data-lang="es">Español</button>
+                <button class="lang-option" data-lang="fr">Français</button>
+            </div>
         </div>
     </div>
 
@@ -4229,29 +4294,48 @@
         }
 
         // ═══════════════════════════════════════════════════════════
+        // LANGUAGE DROPDOWN
+        // ═══════════════════════════════════════════════════════════
+
+        const langTrigger = document.getElementById('langTrigger');
+        const langMenu = document.getElementById('langMenu');
+        const currentLangCode = document.getElementById('currentLangCode');
+
+        function updateLangDisplay() {
+            currentLangCode.textContent = currentLang.toUpperCase();
+            document.querySelectorAll('.lang-option').forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.lang === currentLang);
+            });
+        }
+
+        langTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langMenu.classList.toggle('open');
+        });
+
+        document.querySelectorAll('.lang-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                setLanguage(opt.dataset.lang);
+                updateLangDisplay();
+                langMenu.classList.remove('open');
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.lang-dropdown')) {
+                langMenu.classList.remove('open');
+            }
+        });
+
+        // ═══════════════════════════════════════════════════════════
         // START
         // ═══════════════════════════════════════════════════════════
 
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize language
             currentLang = getLanguage();
-
-            // Mark active language button
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.lang === currentLang);
-            });
-
-            // Apply translations
+            updateLangDisplay();
             applyTranslations();
-
-            // Language Switcher Events
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    setLanguage(btn.dataset.lang);
-                });
-            });
 
             // Initialize game
             init();
