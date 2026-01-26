@@ -2274,12 +2274,379 @@
             border-color: var(--robo);
             background: rgba(59, 130, 246, 0.1);
         }
+
+        /* ═══════════════════════════════════════════════════════════
+           LANGUAGE SWITCHER
+           ═══════════════════════════════════════════════════════════ */
+        .language-switcher {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.25rem;
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+        }
+
+        .lang-btn {
+            padding: 0.4rem 0.6rem;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .lang-btn.active {
+            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--veritas), var(--robo));
+        }
+
+        .top-lang-bar {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 50;
+        }
     </style>
 </head>
 
 <body>
+    <script>
+        // ═══════════════════════════════════════════════════════════
+        // TRANSLATIONS
+        // ═══════════════════════════════════════════════════════════
+        const TRANSLATIONS = {
+            de: {
+                memory_title: 'Memory Scan',
+                memory_tagline: 'Finde Paare. Erkenne KI.',
+                difficulty_easy: 'Einsteiger',
+                difficulty_medium: 'Standard',
+                difficulty_hard: 'Experte',
+                score: 'Score',
+                pairs: 'Paare',
+                streak: 'Serie',
+                sort_question: 'Echtes Foto oder KI-generiert?',
+                btn_real: 'REAL',
+                btn_ai: 'KI',
+                sort_correct: 'Richtig erkannt!',
+                sort_wrong: 'Das war',
+                sort_was_real: 'ein echtes Foto',
+                sort_was_ai: 'KI-generiert',
+                tutorial_step1_title: 'Finde Paare',
+                tutorial_step1_desc: 'Decke zwei Karten auf. Sind sie identisch? Match!',
+                tutorial_step2_title: 'Erkenne KI',
+                tutorial_step2_desc: 'Nach jedem Match: Ist das Bild echt oder KI-generiert?',
+                tutorial_step3_title: 'Sammle Punkte',
+                tutorial_step3_desc: 'Schnell + richtig = mehr Punkte. Bau deinen Streak auf!',
+                btn_next: 'Weiter',
+                btn_start: "Los geht's!",
+                btn_skip: 'Überspringen',
+                results_title: 'Spiel beendet',
+                results_points: 'Punkte',
+                results_time: 'Zeit',
+                results_accuracy: 'KI-Erkennung',
+                results_best_streak: 'Max Streak',
+                btn_replay: 'Nochmal',
+                btn_menu: 'Menü',
+                btn_share: 'Teilen',
+                new_highscore: 'NEUER HIGHSCORE!',
+                highscore_title: 'Bestenliste',
+                highscore_name_placeholder: 'Dein Name',
+                highscore_rank: 'Platz',
+                btn_save: 'Speichern',
+                btn_reset: 'Zurücksetzen',
+                paused: 'Pausiert',
+                timer_stopped: 'Timer gestoppt',
+                btn_resume: 'Weiterspielen',
+                btn_quit: 'Beenden',
+                match: 'MATCH!',
+                points_label: 'Punkte',
+                skip_to_game: 'Zum Spiel springen',
+                no_highscores: 'Noch keine Highscores. Sei der Erste!',
+                confirm_reset: 'Alle Highscores löschen?',
+                result_copied: 'Ergebnis kopiert!',
+                share_failed: 'Teilen fehlgeschlagen',
+                or: 'oder',
+            },
+            en: {
+                memory_title: 'Memory Scan',
+                memory_tagline: 'Find pairs. Detect AI.',
+                difficulty_easy: 'Easy',
+                difficulty_medium: 'Standard',
+                difficulty_hard: 'Expert',
+                score: 'Score',
+                pairs: 'Pairs',
+                streak: 'Streak',
+                sort_question: 'Real photo or AI-generated?',
+                btn_real: 'REAL',
+                btn_ai: 'AI',
+                sort_correct: 'Correct!',
+                sort_wrong: 'That was',
+                sort_was_real: 'a real photo',
+                sort_was_ai: 'AI-generated',
+                tutorial_step1_title: 'Find Pairs',
+                tutorial_step1_desc: 'Flip two cards. Are they identical? Match!',
+                tutorial_step2_title: 'Detect AI',
+                tutorial_step2_desc: 'After each match: Is the image real or AI-generated?',
+                tutorial_step3_title: 'Collect Points',
+                tutorial_step3_desc: 'Fast + correct = more points. Build your streak!',
+                btn_next: 'Next',
+                btn_start: "Let's go!",
+                btn_skip: 'Skip',
+                results_title: 'Game Over',
+                results_points: 'Points',
+                results_time: 'Time',
+                results_accuracy: 'AI Detection',
+                results_best_streak: 'Best Streak',
+                btn_replay: 'Play Again',
+                btn_menu: 'Menu',
+                btn_share: 'Share',
+                new_highscore: 'NEW HIGHSCORE!',
+                highscore_title: 'Leaderboard',
+                highscore_name_placeholder: 'Your name',
+                highscore_rank: 'Rank',
+                btn_save: 'Save',
+                btn_reset: 'Reset',
+                paused: 'Paused',
+                timer_stopped: 'Timer stopped',
+                btn_resume: 'Resume',
+                btn_quit: 'Quit',
+                match: 'MATCH!',
+                points_label: 'Points',
+                skip_to_game: 'Skip to game',
+                no_highscores: 'No highscores yet. Be the first!',
+                confirm_reset: 'Delete all highscores?',
+                result_copied: 'Result copied!',
+                share_failed: 'Share failed',
+                or: 'or',
+            },
+            it: {
+                memory_title: 'Memory Scan',
+                memory_tagline: 'Trova coppie. Rileva IA.',
+                difficulty_easy: 'Facile',
+                difficulty_medium: 'Normale',
+                difficulty_hard: 'Esperto',
+                score: 'Punti',
+                pairs: 'Coppie',
+                streak: 'Serie',
+                sort_question: 'Foto reale o generata da IA?',
+                btn_real: 'REALE',
+                btn_ai: 'IA',
+                sort_correct: 'Corretto!',
+                sort_wrong: 'Era',
+                sort_was_real: 'una foto reale',
+                sort_was_ai: 'generata da IA',
+                tutorial_step1_title: 'Trova Coppie',
+                tutorial_step1_desc: 'Gira due carte. Sono identiche? Match!',
+                tutorial_step2_title: 'Rileva IA',
+                tutorial_step2_desc: "Dopo ogni match: L'immagine è reale o IA?",
+                tutorial_step3_title: 'Raccogli Punti',
+                tutorial_step3_desc: 'Veloce + corretto = più punti. Costruisci la tua serie!',
+                btn_next: 'Avanti',
+                btn_start: 'Iniziamo!',
+                btn_skip: 'Salta',
+                results_title: 'Fine Gioco',
+                results_points: 'Punti',
+                results_time: 'Tempo',
+                results_accuracy: 'Rilevamento IA',
+                results_best_streak: 'Migliore Serie',
+                btn_replay: 'Rigioca',
+                btn_menu: 'Menu',
+                btn_share: 'Condividi',
+                new_highscore: 'NUOVO RECORD!',
+                highscore_title: 'Classifica',
+                highscore_name_placeholder: 'Il tuo nome',
+                highscore_rank: 'Posizione',
+                btn_save: 'Salva',
+                btn_reset: 'Reimposta',
+                paused: 'In Pausa',
+                timer_stopped: 'Timer fermato',
+                btn_resume: 'Riprendi',
+                btn_quit: 'Esci',
+                match: 'MATCH!',
+                points_label: 'Punti',
+                skip_to_game: 'Vai al gioco',
+                no_highscores: 'Nessun record. Sii il primo!',
+                confirm_reset: 'Eliminare tutti i record?',
+                result_copied: 'Risultato copiato!',
+                share_failed: 'Condivisione fallita',
+                or: 'o',
+            },
+            es: {
+                memory_title: 'Memory Scan',
+                memory_tagline: 'Encuentra parejas. Detecta IA.',
+                difficulty_easy: 'Fácil',
+                difficulty_medium: 'Normal',
+                difficulty_hard: 'Experto',
+                score: 'Puntos',
+                pairs: 'Parejas',
+                streak: 'Racha',
+                sort_question: '¿Foto real o generada por IA?',
+                btn_real: 'REAL',
+                btn_ai: 'IA',
+                sort_correct: '¡Correcto!',
+                sort_wrong: 'Era',
+                sort_was_real: 'una foto real',
+                sort_was_ai: 'generada por IA',
+                tutorial_step1_title: 'Encuentra Parejas',
+                tutorial_step1_desc: 'Voltea dos cartas. ¿Son idénticas? ¡Match!',
+                tutorial_step2_title: 'Detecta IA',
+                tutorial_step2_desc: 'Después de cada match: ¿La imagen es real o IA?',
+                tutorial_step3_title: 'Suma Puntos',
+                tutorial_step3_desc: 'Rápido + correcto = más puntos. ¡Construye tu racha!',
+                btn_next: 'Siguiente',
+                btn_start: '¡Vamos!',
+                btn_skip: 'Saltar',
+                results_title: 'Fin del Juego',
+                results_points: 'Puntos',
+                results_time: 'Tiempo',
+                results_accuracy: 'Detección IA',
+                results_best_streak: 'Mejor Racha',
+                btn_replay: 'Otra vez',
+                btn_menu: 'Menú',
+                btn_share: 'Compartir',
+                new_highscore: '¡NUEVO RÉCORD!',
+                highscore_title: 'Clasificación',
+                highscore_name_placeholder: 'Tu nombre',
+                highscore_rank: 'Puesto',
+                btn_save: 'Guardar',
+                btn_reset: 'Reiniciar',
+                paused: 'Pausado',
+                timer_stopped: 'Timer detenido',
+                btn_resume: 'Continuar',
+                btn_quit: 'Salir',
+                match: '¡MATCH!',
+                points_label: 'Puntos',
+                skip_to_game: 'Ir al juego',
+                no_highscores: 'Sin récords. ¡Sé el primero!',
+                confirm_reset: '¿Eliminar todos los récords?',
+                result_copied: '¡Resultado copiado!',
+                share_failed: 'Error al compartir',
+                or: 'o',
+            },
+            fr: {
+                memory_title: 'Memory Scan',
+                memory_tagline: "Trouvez des paires. Détectez l'IA.",
+                difficulty_easy: 'Facile',
+                difficulty_medium: 'Normal',
+                difficulty_hard: 'Expert',
+                score: 'Points',
+                pairs: 'Paires',
+                streak: 'Série',
+                sort_question: 'Photo réelle ou générée par IA?',
+                btn_real: 'RÉEL',
+                btn_ai: 'IA',
+                sort_correct: 'Correct!',
+                sort_wrong: "C'était",
+                sort_was_real: 'une vraie photo',
+                sort_was_ai: 'généré par IA',
+                tutorial_step1_title: 'Trouvez des Paires',
+                tutorial_step1_desc: 'Retournez deux cartes. Sont-elles identiques? Match!',
+                tutorial_step2_title: "Détectez l'IA",
+                tutorial_step2_desc: "Après chaque match: L'image est-elle réelle ou IA?",
+                tutorial_step3_title: 'Gagnez des Points',
+                tutorial_step3_desc: 'Rapide + correct = plus de points. Construisez votre série!',
+                btn_next: 'Suivant',
+                btn_start: "C'est parti!",
+                btn_skip: 'Passer',
+                results_title: 'Fin de Partie',
+                results_points: 'Points',
+                results_time: 'Temps',
+                results_accuracy: 'Détection IA',
+                results_best_streak: 'Meilleure Série',
+                btn_replay: 'Rejouer',
+                btn_menu: 'Menu',
+                btn_share: 'Partager',
+                new_highscore: 'NOUVEAU RECORD!',
+                highscore_title: 'Classement',
+                highscore_name_placeholder: 'Votre nom',
+                highscore_rank: 'Rang',
+                btn_save: 'Sauvegarder',
+                btn_reset: 'Réinitialiser',
+                paused: 'En Pause',
+                timer_stopped: 'Timer arrêté',
+                btn_resume: 'Reprendre',
+                btn_quit: 'Quitter',
+                match: 'MATCH!',
+                points_label: 'Points',
+                skip_to_game: 'Aller au jeu',
+                no_highscores: 'Pas de records. Soyez le premier!',
+                confirm_reset: 'Supprimer tous les records?',
+                result_copied: 'Résultat copié!',
+                share_failed: 'Échec du partage',
+                or: 'ou',
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════
+        // LANGUAGE SYSTEM
+        // ═══════════════════════════════════════════════════════════
+        function getLanguage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            if (urlLang && TRANSLATIONS[urlLang]) return urlLang;
+
+            const savedLang = localStorage.getItem('forRealScan_language');
+            if (savedLang && TRANSLATIONS[savedLang]) return savedLang;
+
+            const browserLang = navigator.language.split('-')[0];
+            if (TRANSLATIONS[browserLang]) return browserLang;
+
+            return 'de';
+        }
+
+        let currentLang = getLanguage();
+
+        function setLanguage(lang) {
+            if (!TRANSLATIONS[lang]) return;
+            currentLang = lang;
+            localStorage.setItem('forRealScan_language', lang);
+            applyTranslations();
+        }
+
+        function t(key) {
+            return TRANSLATIONS[currentLang][key] || TRANSLATIONS['de'][key] || key;
+        }
+
+        function applyTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                el.textContent = t(key);
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                el.placeholder = t(key);
+            });
+
+            document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+                const key = el.getAttribute('data-i18n-aria');
+                el.setAttribute('aria-label', t(key));
+            });
+        }
+    </script>
+
+    <!-- Language Switcher -->
+    <div class="top-lang-bar">
+        <div class="language-switcher">
+            <button class="lang-btn" data-lang="de">DE</button>
+            <button class="lang-btn" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="it">IT</button>
+            <button class="lang-btn" data-lang="es">ES</button>
+            <button class="lang-btn" data-lang="fr">FR</button>
+        </div>
+    </div>
+
     <!-- Skip Link for Accessibility -->
-    <a href="#memoryGrid" class="skip-link">Zum Spiel springen</a>
+    <a href="#memoryGrid" class="skip-link" data-i18n="skip_to_game">Zum Spiel springen</a>
 
     <!-- Screen Reader Announcer -->
     <div id="srAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
@@ -2301,25 +2668,25 @@
         <header class="start-header">
             <div class="logo-container">
                 <img src="Logo_Master-removebg-preview.png" alt="ForRealScan Logo" class="logo-img">
-                <h1 class="start-title">Memory Scan</h1>
-                <p class="start-subtitle">Finde Paare. Erkenne KI.</p>
+                <h1 class="start-title" data-i18n="memory_title">Memory Scan</h1>
+                <p class="start-subtitle" data-i18n="memory_tagline">Finde Paare. Erkenne KI.</p>
             </div>
         </header>
 
         <div class="difficulty-options">
             <button class="difficulty-btn" data-difficulty="easy">
                 <span class="diff-icon">🌱</span>
-                <span class="diff-name">Einsteiger</span>
+                <span class="diff-name" data-i18n="difficulty_easy">Einsteiger</span>
                 <span class="diff-desc">4×3 Grid · 6 Paare</span>
             </button>
             <button class="difficulty-btn" data-difficulty="medium">
                 <span class="diff-icon">🎯</span>
-                <span class="diff-name">Standard</span>
+                <span class="diff-name" data-i18n="difficulty_medium">Standard</span>
                 <span class="diff-desc">4×4 Grid · 8 Paare</span>
             </button>
             <button class="difficulty-btn" data-difficulty="hard">
                 <span class="diff-icon">🔥</span>
-                <span class="diff-name">Experte</span>
+                <span class="diff-name" data-i18n="difficulty_hard">Experte</span>
                 <span class="diff-desc">6×4 Grid · 12 Paare</span>
             </button>
         </div>
@@ -2333,11 +2700,11 @@
             <img src="Logo_Master-removebg-preview.png" alt="Logo" class="header-logo">
             <div class="header-stats">
                 <div class="stat-item">
-                    <span class="stat-label">Score</span>
+                    <span class="stat-label" data-i18n="score">Score</span>
                     <span class="stat-value" id="scoreDisplay">0</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Paare</span>
+                    <span class="stat-label" data-i18n="pairs">Paare</span>
                     <span class="stat-value" id="pairsDisplay">0/8</span>
                 </div>
             </div>
@@ -2367,7 +2734,7 @@
                     <div class="box-glow"></div>
                     <div class="box-header">
                         <span class="box-icon">🦉</span>
-                        <span class="box-label">REAL</span>
+                        <span class="box-label" data-i18n="btn_real">REAL</span>
                     </div>
                     <div class="box-counter">
                         <span class="counter-current" id="realCount">0</span>
@@ -2384,7 +2751,7 @@
                     <div class="box-glow"></div>
                     <div class="box-header">
                         <span class="box-icon">🤖</span>
-                        <span class="box-label">KI</span>
+                        <span class="box-label" data-i18n="btn_ai">KI</span>
                     </div>
                     <div class="box-counter">
                         <span class="counter-current" id="aiCount">0</span>
@@ -2408,11 +2775,11 @@
             <div class="sort-modal-header">
                 <div class="match-badge">
                     <span class="match-icon">✓</span>
-                    <span class="match-text">MATCH!</span>
+                    <span class="match-text" data-i18n="match">MATCH!</span>
                 </div>
                 <div class="points-earned">
                     <span class="points-value">+500</span>
-                    <span class="points-label">Punkte</span>
+                    <span class="points-label" data-i18n="points_label">Punkte</span>
                 </div>
             </div>
 
@@ -2430,7 +2797,7 @@
             <!-- Frage -->
             <div class="sort-question">
                 <span class="question-icon">🔍</span>
-                <span class="question-text">Echtes Foto oder KI-generiert?</span>
+                <span class="question-text" data-i18n="sort_question">Echtes Foto oder KI-generiert?</span>
             </div>
 
             <!-- Buttons -->
@@ -2439,24 +2806,24 @@
                     <div class="sort-btn-glow"></div>
                     <div class="sort-btn-content">
                         <span class="sort-btn-icon">🦉</span>
-                        <span class="sort-btn-label">REAL</span>
+                        <span class="sort-btn-label" data-i18n="btn_real">REAL</span>
                         <span class="sort-btn-hint">
-                            <kbd>←</kbd> oder <kbd>A</kbd>
+                            <kbd>←</kbd> <span data-i18n="or">oder</span> <kbd>A</kbd>
                         </span>
                     </div>
                 </button>
 
                 <div class="sort-btn-divider">
-                    <span>oder</span>
+                    <span data-i18n="or">oder</span>
                 </div>
 
                 <button class="sort-btn sort-btn-ai" id="btnSortAi" data-choice="ai">
                     <div class="sort-btn-glow"></div>
                     <div class="sort-btn-content">
                         <span class="sort-btn-icon">🤖</span>
-                        <span class="sort-btn-label">KI</span>
+                        <span class="sort-btn-label" data-i18n="btn_ai">KI</span>
                         <span class="sort-btn-hint">
-                            <kbd>→</kbd> oder <kbd>D</kbd>
+                            <kbd>→</kbd> <span data-i18n="or">oder</span> <kbd>D</kbd>
                         </span>
                     </div>
                 </button>
@@ -2474,7 +2841,7 @@
             <div class="sort-streak" id="sortStreak">
                 <span class="streak-fire">🔥</span>
                 <span class="streak-count">5</span>
-                <span class="streak-label">Serie</span>
+                <span class="streak-label" data-i18n="streak">Serie</span>
             </div>
         </div>
     </div>
@@ -2499,8 +2866,8 @@
                         <div class="demo-card"></div>
                     </div>
                 </div>
-                <h3 class="tutorial-title">Finde Paare</h3>
-                <p class="tutorial-desc">Decke zwei Karten auf. Sind sie identisch? Match!</p>
+                <h3 class="tutorial-title" data-i18n="tutorial_step1_title">Finde Paare</h3>
+                <p class="tutorial-desc" data-i18n="tutorial_step1_desc">Decke zwei Karten auf. Sind sie identisch? Match!</p>
             </div>
 
             <!-- Step 2: Erkenne KI -->
@@ -2514,8 +2881,8 @@
                         </div>
                     </div>
                 </div>
-                <h3 class="tutorial-title">Erkenne KI</h3>
-                <p class="tutorial-desc">Nach jedem Match: Ist das Bild echt oder KI-generiert?</p>
+                <h3 class="tutorial-title" data-i18n="tutorial_step2_title">Erkenne KI</h3>
+                <p class="tutorial-desc" data-i18n="tutorial_step2_desc">Nach jedem Match: Ist das Bild echt oder KI-generiert?</p>
             </div>
 
             <!-- Step 3: Sammle Punkte -->
@@ -2526,8 +2893,8 @@
                         <div class="demo-streak">🔥 5er Serie!</div>
                     </div>
                 </div>
-                <h3 class="tutorial-title">Sammle Punkte</h3>
-                <p class="tutorial-desc">Schnell + richtig = mehr Punkte. Bau deinen Streak auf!</p>
+                <h3 class="tutorial-title" data-i18n="tutorial_step3_title">Sammle Punkte</h3>
+                <p class="tutorial-desc" data-i18n="tutorial_step3_desc">Schnell + richtig = mehr Punkte. Bau deinen Streak auf!</p>
             </div>
 
             <!-- Navigation -->
@@ -2537,11 +2904,11 @@
                     <span class="dot" data-step="2"></span>
                     <span class="dot" data-step="3"></span>
                 </div>
-                <button class="btn-tutorial-next" id="btnTutorialNext">Weiter</button>
-                <button class="btn-tutorial-start" id="btnTutorialStart">Los geht's!</button>
+                <button class="btn-tutorial-next" id="btnTutorialNext" data-i18n="btn_next">Weiter</button>
+                <button class="btn-tutorial-start" id="btnTutorialStart" data-i18n="btn_start">Los geht's!</button>
             </div>
 
-            <button class="btn-tutorial-skip" id="btnTutorialSkip">Überspringen</button>
+            <button class="btn-tutorial-skip" id="btnTutorialSkip" data-i18n="btn_skip">Überspringen</button>
         </div>
     </div>
 
@@ -2550,14 +2917,14 @@
          ═══════════════════════════════════════════════════════════ -->
     <div class="pause-overlay" id="pauseOverlay">
         <div class="pause-card">
-            <h2 class="pause-title">Pausiert</h2>
-            <p class="pause-info">Timer gestoppt</p>
+            <h2 class="pause-title" data-i18n="paused">Pausiert</h2>
+            <p class="pause-info" data-i18n="timer_stopped">Timer gestoppt</p>
             <div class="pause-actions">
                 <button class="btn btn-primary" id="btnResume">
-                    ▶️ Weiterspielen
+                    ▶️ <span data-i18n="btn_resume">Weiterspielen</span>
                 </button>
                 <button class="btn btn-secondary" id="btnQuitGame">
-                    🏠 Beenden
+                    🏠 <span data-i18n="btn_quit">Beenden</span>
                 </button>
             </div>
         </div>
@@ -2568,21 +2935,21 @@
          ═══════════════════════════════════════════════════════════ -->
     <div id="resultsScreen" class="screen results-screen">
         <div class="results-content">
-            <h2 class="results-title">Spiel beendet</h2>
+            <h2 class="results-title" data-i18n="results_title">Spiel beendet</h2>
 
             <div class="score-display">
                 <div class="final-score" id="finalScore">0</div>
-                <div class="score-label">Punkte</div>
+                <div class="score-label" data-i18n="results_points">Punkte</div>
             </div>
 
             <div class="results-stats">
                 <div class="result-stat">
                     <span class="result-stat-value" id="resultPairs">8/8</span>
-                    <span class="result-stat-label">Paare</span>
+                    <span class="result-stat-label" data-i18n="pairs">Paare</span>
                 </div>
                 <div class="result-stat">
                     <span class="result-stat-value" id="resultTime">1:24</span>
-                    <span class="result-stat-label">Zeit</span>
+                    <span class="result-stat-label" data-i18n="results_time">Zeit</span>
                 </div>
             </div>
 
@@ -2590,42 +2957,42 @@
             <div class="results-stats-extended">
                 <div class="result-stat-ext accuracy">
                     <span class="result-stat-ext-value" id="resultAccuracy">0%</span>
-                    <span class="result-stat-ext-label">KI-Erkennung</span>
+                    <span class="result-stat-ext-label" data-i18n="results_accuracy">KI-Erkennung</span>
                 </div>
                 <div class="result-stat-ext streak">
                     <span class="result-stat-ext-value" id="resultStreak">0</span>
-                    <span class="result-stat-ext-label">Max Streak</span>
+                    <span class="result-stat-ext-label" data-i18n="results_best_streak">Max Streak</span>
                 </div>
             </div>
 
             <!-- Highscore Notice (Phase 3) -->
             <div class="highscore-notice" id="highscoreNotice">
-                <div class="highscore-badge">🎉 NEUER HIGHSCORE!</div>
-                <div class="highscore-rank">Platz <span id="highscoreRank">1</span></div>
+                <div class="highscore-badge">🎉 <span data-i18n="new_highscore">NEUER HIGHSCORE!</span></div>
+                <div class="highscore-rank"><span data-i18n="highscore_rank">Platz</span> <span id="highscoreRank">1</span></div>
                 <div class="highscore-form">
-                    <input type="text" class="highscore-input" id="highscoreName" placeholder="Dein Name" maxlength="15">
-                    <button class="btn-save-score" id="btnSaveScore">Speichern</button>
+                    <input type="text" class="highscore-input" id="highscoreName" data-i18n-placeholder="highscore_name_placeholder" placeholder="Dein Name" maxlength="15">
+                    <button class="btn-save-score" id="btnSaveScore" data-i18n="btn_save">Speichern</button>
                 </div>
             </div>
 
             <!-- Highscore List (Phase 3) -->
             <div class="highscore-list">
-                <h3 class="highscore-title">🏆 Bestenliste</h3>
+                <h3 class="highscore-title">🏆 <span data-i18n="highscore_title">Bestenliste</span></h3>
                 <div class="highscore-entries" id="highscoreEntries">
                     <!-- Will be populated by JavaScript -->
                 </div>
-                <button class="btn-reset-scores" id="btnResetScores">Zurücksetzen</button>
+                <button class="btn-reset-scores" id="btnResetScores" data-i18n="btn_reset">Zurücksetzen</button>
             </div>
 
             <div class="results-actions">
                 <button class="btn btn-primary" id="btnReplay">
-                    🔄 Nochmal
+                    🔄 <span data-i18n="btn_replay">Nochmal</span>
                 </button>
                 <button class="btn btn-share" id="btnShare">
-                    📤 Teilen
+                    📤 <span data-i18n="btn_share">Teilen</span>
                 </button>
                 <button class="btn btn-secondary" id="btnMenu">
-                    🏠 Menü
+                    🏠 <span data-i18n="btn_menu">Menü</span>
                 </button>
             </div>
         </div>
@@ -2838,7 +3205,7 @@
         }
 
         function resetHighscores() {
-            if (confirm('Alle Highscores löschen?')) {
+            if (confirm(t('confirm_reset'))) {
                 localStorage.removeItem(HS_KEY);
                 renderHighscores();
             }
@@ -2855,7 +3222,7 @@
             const container = document.getElementById('highscoreEntries');
 
             if (highscores.length === 0) {
-                container.innerHTML = '<div class="highscore-empty">Noch keine Highscores. Sei der Erste!</div>';
+                container.innerHTML = `<div class="highscore-empty">${t('no_highscores')}</div>`;
                 return;
             }
 
@@ -2947,16 +3314,15 @@
             const results = window.gameResults;
             if (!results) return;
 
-            const shareText = `🧠 Memory Scan: ${results.score.toLocaleString()} Punkte!\n` +
-                              `🎯 ${results.accuracy}% KI-Erkennung\n` +
-                              `🔥 ${results.maxStreak}er Streak\n\n` +
-                              `Schaffst du mehr?`;
+            const shareText = `🧠 Memory Scan: ${results.score.toLocaleString()} ${t('results_points')}!\n` +
+                              `🎯 ${results.accuracy}% ${t('results_accuracy')}\n` +
+                              `🔥 ${results.maxStreak} ${t('streak')}\n`;
 
             // Try native Share API
             if (navigator.share) {
                 try {
                     await navigator.share({
-                        title: 'Memory Scan Ergebnis',
+                        title: 'Memory Scan',
                         text: shareText,
                         url: window.location.href
                     });
@@ -2968,10 +3334,10 @@
 
             // Fallback: Copy to Clipboard
             try {
-                await navigator.clipboard.writeText(shareText + `\nSpiel: ${window.location.href}`);
-                showToast('Ergebnis kopiert!');
+                await navigator.clipboard.writeText(shareText + `\n${window.location.href}`);
+                showToast(t('result_copied'));
             } catch (e) {
-                showToast('Teilen fehlgeschlagen');
+                showToast(t('share_failed'));
             }
         }
 
@@ -3654,11 +4020,11 @@
                 wrongSorts++;
 
                 // Show Feedback
-                const revealText = pair.type === 'real' ? 'ein echtes Foto' : 'KI-generiert';
+                const revealText = pair.type === 'real' ? t('sort_was_real') : t('sort_was_ai');
                 showSortFeedback(false, 0, revealText);
 
                 // Phase 3: Announce for screen readers
-                announce(`Falsch. Das war ${revealText}.`);
+                announce(`${t('sort_wrong')} ${revealText}.`);
 
                 // Trotzdem in korrekter Box sortieren
                 if (pair.type === 'real') {
@@ -3699,12 +4065,12 @@
 
             if (isCorrect) {
                 sortEls.feedbackIcon.textContent = '✓';
-                sortEls.feedbackText.textContent = 'Richtig erkannt!';
+                sortEls.feedbackText.textContent = t('sort_correct');
                 sortEls.feedbackBonus.textContent = `+${points}`;
                 sortEls.feedbackBonus.style.display = 'block';
             } else {
                 sortEls.feedbackIcon.textContent = '✗';
-                sortEls.feedbackText.textContent = `Das war ${revealText}`;
+                sortEls.feedbackText.textContent = `${t('sort_wrong')} ${revealText}`;
                 sortEls.feedbackBonus.style.display = 'none';
             }
 
@@ -3866,7 +4232,30 @@
         // START
         // ═══════════════════════════════════════════════════════════
 
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize language
+            currentLang = getLanguage();
+
+            // Mark active language button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === currentLang);
+            });
+
+            // Apply translations
+            applyTranslations();
+
+            // Language Switcher Events
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    setLanguage(btn.dataset.lang);
+                });
+            });
+
+            // Initialize game
+            init();
+        });
     </script>
 
     <!-- Spore Effect (subtle for memory game) -->
