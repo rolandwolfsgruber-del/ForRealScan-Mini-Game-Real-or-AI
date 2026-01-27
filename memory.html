@@ -11,6 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         /* ═══════════════════════════════════════════════════════════
            CSS VARIABLES (Design System)
@@ -2370,6 +2373,208 @@
             color: var(--text-primary);
             background: linear-gradient(135deg, var(--veritas), var(--robo));
         }
+
+        /* ═══════════════════════════════════════════════════════════
+           ONLINE LEADERBOARD
+           ═══════════════════════════════════════════════════════════ */
+
+        .leaderboard-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+        }
+
+        .leaderboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .leaderboard-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .leaderboard-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.4rem 0.8rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--veritas), var(--robo));
+            border-color: transparent;
+            color: white;
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .leaderboard-loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        /* Leaderboard Entry */
+        .lb-entry {
+            display: grid;
+            grid-template-columns: 2.5rem 1fr auto;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+        }
+
+        .lb-entry:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .lb-entry.highlight {
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(234, 179, 8, 0.05));
+            border: 1px solid rgba(234, 179, 8, 0.3);
+        }
+
+        .lb-entry.is-you {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        /* Rank Badge */
+        .lb-rank {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: 700;
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+        }
+
+        .lb-entry:nth-child(1) .lb-rank {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #1a1a1a;
+        }
+
+        .lb-entry:nth-child(2) .lb-rank {
+            background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
+            color: #1a1a1a;
+        }
+
+        .lb-entry:nth-child(3) .lb-rank {
+            background: linear-gradient(135deg, #cd7f32, #a05a2c);
+            color: white;
+        }
+
+        /* Player Info */
+        .lb-player {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            overflow: hidden;
+        }
+
+        .lb-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .lb-meta {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .lb-difficulty {
+            padding: 0.1rem 0.4rem;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.6rem;
+        }
+
+        /* Score */
+        .lb-score {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Your Rank Footer */
+        .leaderboard-footer {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .your-rank {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .your-rank strong {
+            color: var(--robo);
+        }
+
+        /* Scrollbar */
+        .leaderboard-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .leaderboard-list::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+
+        .leaderboard-list::-webkit-scrollbar-thumb {
+            background: var(--glass-border);
+            border-radius: 3px;
+        }
+
+        .leaderboard-list::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
     </style>
 </head>
 
@@ -2430,6 +2635,14 @@
                 result_copied: 'Ergebnis kopiert!',
                 share_failed: 'Teilen fehlgeschlagen',
                 or: 'oder',
+                leaderboard_title: 'Globale Bestenliste',
+                leaderboard_all: 'Alle',
+                leaderboard_mode: 'Mein Modus',
+                leaderboard_loading: 'Laden...',
+                leaderboard_empty: 'Noch keine Einträge. Sei der Erste!',
+                leaderboard_you: '(Du)',
+                leaderboard_rank: 'Dein globaler Rang:',
+                leaderboard_just_now: 'Gerade eben',
             },
             en: {
                 memory_title: 'Memory Scan',
@@ -2482,6 +2695,14 @@
                 result_copied: 'Result copied!',
                 share_failed: 'Share failed',
                 or: 'or',
+                leaderboard_title: 'Global Leaderboard',
+                leaderboard_all: 'All',
+                leaderboard_mode: 'My Mode',
+                leaderboard_loading: 'Loading...',
+                leaderboard_empty: 'No entries yet. Be the first!',
+                leaderboard_you: '(You)',
+                leaderboard_rank: 'Your global rank:',
+                leaderboard_just_now: 'Just now',
             },
             it: {
                 memory_title: 'Memory Scan',
@@ -2534,6 +2755,14 @@
                 result_copied: 'Risultato copiato!',
                 share_failed: 'Condivisione fallita',
                 or: 'o',
+                leaderboard_title: 'Classifica Globale',
+                leaderboard_all: 'Tutti',
+                leaderboard_mode: 'Mio Modo',
+                leaderboard_loading: 'Caricamento...',
+                leaderboard_empty: 'Nessuna voce. Sii il primo!',
+                leaderboard_you: '(Tu)',
+                leaderboard_rank: 'Il tuo ranking globale:',
+                leaderboard_just_now: 'Adesso',
             },
             es: {
                 memory_title: 'Memory Scan',
@@ -2586,6 +2815,14 @@
                 result_copied: '¡Resultado copiado!',
                 share_failed: 'Error al compartir',
                 or: 'o',
+                leaderboard_title: 'Clasificación Global',
+                leaderboard_all: 'Todos',
+                leaderboard_mode: 'Mi Modo',
+                leaderboard_loading: 'Cargando...',
+                leaderboard_empty: 'Sin entradas. ¡Sé el primero!',
+                leaderboard_you: '(Tú)',
+                leaderboard_rank: 'Tu ranking global:',
+                leaderboard_just_now: 'Ahora mismo',
             },
             fr: {
                 memory_title: 'Memory Scan',
@@ -2638,6 +2875,14 @@
                 result_copied: 'Résultat copié!',
                 share_failed: 'Échec du partage',
                 or: 'ou',
+                leaderboard_title: 'Classement Mondial',
+                leaderboard_all: 'Tous',
+                leaderboard_mode: 'Mon Mode',
+                leaderboard_loading: 'Chargement...',
+                leaderboard_empty: 'Aucune entrée. Soyez le premier!',
+                leaderboard_you: '(Toi)',
+                leaderboard_rank: 'Ton rang mondial:',
+                leaderboard_just_now: "À l'instant",
             }
         };
 
@@ -3049,6 +3294,23 @@
                 <button class="btn-reset-scores" id="btnResetScores" data-i18n="btn_reset">Zurücksetzen</button>
             </div>
 
+            <!-- Online Leaderboard -->
+            <div class="leaderboard-section">
+                <div class="leaderboard-header">
+                    <h3 class="leaderboard-title" data-i18n="leaderboard_title">Globale Bestenliste</h3>
+                    <div class="leaderboard-tabs">
+                        <button class="tab-btn active" data-filter="all" data-i18n="leaderboard_all">Alle</button>
+                        <button class="tab-btn" data-filter="difficulty" data-i18n="leaderboard_mode">Mein Modus</button>
+                    </div>
+                </div>
+                <div class="leaderboard-list" id="leaderboardList">
+                    <div class="leaderboard-loading" data-i18n="leaderboard_loading">Laden...</div>
+                </div>
+                <div class="leaderboard-footer">
+                    <div class="your-rank" id="yourRank"></div>
+                </div>
+            </div>
+
             <div class="results-actions">
                 <button class="btn btn-primary" id="btnReplay">
                     🔄 <span data-i18n="btn_replay">Nochmal</span>
@@ -3223,6 +3485,184 @@
             // UI
             buttonClick: () => sound.playTone(800, 0.05, 'sine', 0.15),
         };
+
+        // ═══════════════════════════════════════════════════════════
+        // SUPABASE CLIENT
+        // ═══════════════════════════════════════════════════════════
+
+        const SUPABASE_URL = 'https://tkzwxqbegwohemeduaxl.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrend4cWJlZ3dvaGVtZWR1YXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MTQwMzIsImV4cCI6MjA4NTA5MDAzMn0.xGNG3H4p3lySQIHQa-mzqWhif8jJFRR51qOoMsXZpMU';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Game Type for this page
+        const GAME_TYPE = 'memory';
+
+        // ═══════════════════════════════════════════════════════════
+        // ONLINE HIGHSCORE SYSTEM
+        // ═══════════════════════════════════════════════════════════
+
+        let currentFilter = 'all';
+        let lastSavedScore = null;
+
+        // Save highscore online
+        async function saveOnlineHighscore(playerName, scoreVal, diff, accuracy, maxStreakVal) {
+            try {
+                const { data, error } = await supabase
+                    .from('game_highscores')
+                    .insert({
+                        game_type: GAME_TYPE,
+                        player_name: playerName.substring(0, 15),
+                        score: scoreVal,
+                        difficulty: diff,
+                        accuracy: accuracy || null,
+                        max_streak: maxStreakVal || null
+                    })
+                    .select()
+                    .single();
+
+                if (error) throw error;
+                console.log('Highscore saved:', data);
+                return data;
+            } catch (error) {
+                console.error('Error saving highscore:', error);
+                return null;
+            }
+        }
+
+        // Get top 10 online highscores
+        async function getOnlineHighscores(limit = 10) {
+            try {
+                const { data, error } = await supabase
+                    .from('game_highscores')
+                    .select('*')
+                    .eq('game_type', GAME_TYPE)
+                    .order('score', { ascending: false })
+                    .limit(limit);
+
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Error loading highscores:', error);
+                return [];
+            }
+        }
+
+        // Get highscores by difficulty
+        async function getHighscoresByDifficulty(diff, limit = 10) {
+            try {
+                const { data, error } = await supabase
+                    .from('game_highscores')
+                    .select('*')
+                    .eq('game_type', GAME_TYPE)
+                    .eq('difficulty', diff)
+                    .order('score', { ascending: false })
+                    .limit(limit);
+
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Error loading highscores:', error);
+                return [];
+            }
+        }
+
+        // Check if score is in top 10
+        async function isTopScore(scoreVal) {
+            const highscores = await getOnlineHighscores(10);
+            if (highscores.length < 10) return true;
+            return scoreVal > highscores[highscores.length - 1].score;
+        }
+
+        // Get rank for a score
+        async function getScoreRank(scoreVal) {
+            try {
+                const { count, error } = await supabase
+                    .from('game_highscores')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('game_type', GAME_TYPE)
+                    .gt('score', scoreVal);
+
+                if (error) throw error;
+                return (count || 0) + 1;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        // Time ago formatting
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 1) return t('leaderboard_just_now');
+            if (minutes < 60) return `${minutes}m`;
+            if (hours < 24) return `${hours}h`;
+            if (days < 7) return `${days}d`;
+            return date.toLocaleDateString();
+        }
+
+        // Render online leaderboard
+        async function renderLeaderboard(filter = 'all') {
+            const list = document.getElementById('leaderboardList');
+            list.innerHTML = `<div class="leaderboard-loading">${t('leaderboard_loading')}</div>`;
+
+            let highscores;
+            if (filter === 'difficulty' && difficulty) {
+                highscores = await getHighscoresByDifficulty(difficulty);
+            } else {
+                highscores = await getOnlineHighscores();
+            }
+
+            if (highscores.length === 0) {
+                list.innerHTML = `<div class="leaderboard-loading">${t('leaderboard_empty')}</div>`;
+                return;
+            }
+
+            list.innerHTML = highscores.map((entry, index) => {
+                const isYou = lastSavedScore && entry.id === lastSavedScore.id;
+                const timeAgo = getTimeAgo(new Date(entry.played_at));
+
+                return `
+                    <div class="lb-entry ${isYou ? 'is-you' : ''}">
+                        <div class="lb-rank">${index + 1}</div>
+                        <div class="lb-player">
+                            <span class="lb-name">${escapeHtml(entry.player_name)}${isYou ? ' ' + t('leaderboard_you') : ''}</span>
+                            <div class="lb-meta">
+                                <span class="lb-difficulty">${entry.difficulty || '-'}</span>
+                                <span>${timeAgo}</span>
+                                ${entry.accuracy ? `<span>${entry.accuracy}%</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="lb-score">${entry.score.toLocaleString()}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show your rank
+        async function showYourRank(scoreVal) {
+            const rank = await getScoreRank(scoreVal);
+            const rankEl = document.getElementById('yourRank');
+            if (rank && rankEl) {
+                rankEl.innerHTML = `${t('leaderboard_rank')} <strong>#${rank}</strong>`;
+            }
+        }
+
+        // Initialize tab buttons for leaderboard
+        function initLeaderboardTabs() {
+            document.querySelectorAll('.leaderboard-tabs .tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.leaderboard-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    renderLeaderboard(currentFilter);
+                });
+            });
+        }
 
         // ═══════════════════════════════════════════════════════════
         // PHASE 3: HIGHSCORE SYSTEM
@@ -3637,15 +4077,36 @@
             });
 
             // ═══ PHASE 3: HIGHSCORES ═══
-            document.getElementById('btnSaveScore').addEventListener('click', () => {
+            document.getElementById('btnSaveScore').addEventListener('click', async () => {
                 const nameInput = document.getElementById('highscoreName');
+                const btn = document.getElementById('btnSaveScore');
                 const name = nameInput.value.trim() || 'Anonym';
 
+                // Disable button while saving
+                btn.disabled = true;
+                btn.textContent = '...';
+
+                // Save locally
                 saveHighscore(name, score, difficulty);
                 renderHighscores(score);
 
-                // Hide form
+                // Save online
+                const results = window.gameResults;
+                lastSavedScore = await saveOnlineHighscore(
+                    name,
+                    score,
+                    difficulty,
+                    results?.accuracy || null,
+                    results?.maxStreak || null
+                );
+
+                // Refresh online leaderboard
+                await renderLeaderboard(currentFilter);
+
+                // Hide form and re-enable button
                 document.getElementById('highscoreNotice').style.display = 'none';
+                btn.disabled = false;
+                btn.textContent = t('btn_save');
                 SOUNDS.buttonClick();
             });
 
@@ -3659,6 +4120,9 @@
 
             // ═══ PHASE 3: SHARE ═══
             document.getElementById('btnShare').addEventListener('click', shareResults);
+
+            // Initialize leaderboard tabs
+            initLeaderboardTabs();
 
             // Check tutorial on load
             checkTutorial();
@@ -4284,6 +4748,10 @@
 
             // Phase 3: Render highscore list
             renderHighscores();
+
+            // Online Leaderboard
+            renderLeaderboard(currentFilter);
+            showYourRank(score);
 
             // Phase 3: Announce for screen readers
             announce(`Spiel beendet. Endpunktzahl: ${score}. ${correctSorts} von ${totalPairs} richtig erkannt.`);
