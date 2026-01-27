@@ -2323,7 +2323,18 @@
         const SUPABASE_URL = 'https://tkzwxqbegwohemeduaxl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrend4cWJlZ3dvaGVtZWR1YXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MTQwMzIsImV4cCI6MjA4NTA5MDAzMn0.xGNG3H4p3lySQIHQa-mzqWhif8jJFRR51qOoMsXZpMU';
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Safe Supabase initialization - game works even if CDN fails to load
+        let supabase = null;
+        try {
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('Supabase client initialized successfully');
+            } else {
+                console.warn('Supabase library not loaded - online leaderboard disabled');
+            }
+        } catch (e) {
+            console.error('Failed to initialize Supabase:', e);
+        }
 
         // Game Type for this page
         const GAME_TYPE = 'realai';
@@ -2337,6 +2348,7 @@
 
         // Save highscore online
         async function saveOnlineHighscore(playerName, scoreVal, diff, accuracy, maxStreakVal) {
+            if (!supabase) return null;
             try {
                 const { data, error } = await supabase
                     .from('game_highscores')
@@ -2362,6 +2374,7 @@
 
         // Get top 10 online highscores
         async function getOnlineHighscores(limit = 10) {
+            if (!supabase) return [];
             try {
                 const { data, error } = await supabase
                     .from('game_highscores')
@@ -2380,6 +2393,7 @@
 
         // Get highscores by difficulty
         async function getHighscoresByDifficulty(diff, limit = 10) {
+            if (!supabase) return [];
             try {
                 const { data, error } = await supabase
                     .from('game_highscores')
@@ -2406,6 +2420,7 @@
 
         // Get rank for a score
         async function getScoreRank(scoreVal) {
+            if (!supabase) return null;
             try {
                 const { count, error } = await supabase
                     .from('game_highscores')
@@ -2666,10 +2681,11 @@
             updateLangDisplay();
             applyTranslations();
             initLeaderboardTabs();
-        });
 
-        document.getElementById('startScreen').style.display = 'none';
-        discoverImages();
+            // Initialize game after DOM is ready
+            document.getElementById('startScreen').style.display = 'none';
+            discoverImages();
+        });
 
     </script>
 
