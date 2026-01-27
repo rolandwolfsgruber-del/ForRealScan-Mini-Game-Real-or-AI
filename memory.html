@@ -3494,10 +3494,10 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrend4cWJlZ3dvaGVtZWR1YXhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MTQwMzIsImV4cCI6MjA4NTA5MDAzMn0.xGNG3H4p3lySQIHQa-mzqWhif8jJFRR51qOoMsXZpMU';
 
         // Safe Supabase initialization - game works even if CDN fails to load
-        let supabase = null;
+        let supabaseClient = null;
         try {
             if (window.supabase && typeof window.supabase.createClient === 'function') {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 console.log('Supabase client initialized successfully');
             } else {
                 console.warn('Supabase library not loaded - online leaderboard disabled');
@@ -3518,9 +3518,9 @@
 
         // Save highscore online
         async function saveOnlineHighscore(playerName, scoreVal, diff, accuracy, maxStreakVal) {
-            if (!supabase) return null;
+            if (!supabaseClient) return null;
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('game_highscores')
                     .insert({
                         game_type: GAME_TYPE,
@@ -3544,9 +3544,9 @@
 
         // Get top 10 online highscores
         async function getOnlineHighscores(limit = 10) {
-            if (!supabase) return [];
+            if (!supabaseClient) return [];
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('game_highscores')
                     .select('*')
                     .eq('game_type', GAME_TYPE)
@@ -3563,9 +3563,9 @@
 
         // Get highscores by difficulty
         async function getHighscoresByDifficulty(diff, limit = 10) {
-            if (!supabase) return [];
+            if (!supabaseClient) return [];
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('game_highscores')
                     .select('*')
                     .eq('game_type', GAME_TYPE)
@@ -3590,9 +3590,9 @@
 
         // Get rank for a score
         async function getScoreRank(scoreVal) {
-            if (!supabase) return null;
+            if (!supabaseClient) return null;
             try {
-                const { count, error } = await supabase
+                const { count, error } = await supabaseClient
                     .from('game_highscores')
                     .select('*', { count: 'exact', head: true })
                     .eq('game_type', GAME_TYPE)
