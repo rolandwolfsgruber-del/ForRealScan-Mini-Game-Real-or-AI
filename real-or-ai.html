@@ -2463,8 +2463,8 @@
             list.innerHTML = `<div class="leaderboard-loading">${t('leaderboard_loading')}</div>`;
 
             let highscores;
-            if (filter === 'difficulty' && difficulty) {
-                highscores = await getHighscoresByDifficulty(difficulty);
+            if (filter === 'difficulty' && gameMode) {
+                highscores = await getHighscoresByDifficulty(gameMode);
             } else {
                 highscores = await getOnlineHighscores();
             }
