@@ -2544,6 +2544,8 @@
                 els.highscoreInputArea.style.display = 'flex';
                 els.playerNameInput.value = '';
                 els.playerNameInput.focus();
+                els.btnSaveScore.disabled = false;
+                els.btnSaveScore.textContent = t('save_score');
                 Confetti.start();
             } else {
                 els.highscoreInputArea.style.display = 'none';
