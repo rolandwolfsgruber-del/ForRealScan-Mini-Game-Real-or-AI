@@ -3365,10 +3365,53 @@
         // IMAGE POOL - Real and AI Images
         // ═══════════════════════════════════════════════════════════
 
+        // Statischer Seed = sofort spielbar. Wichtig: imageai111/153/161 wurden
+        // gelöscht (früher fest im Pool → vereinzelt kaputte Karten), imageai256–258
+        // fehlten dagegen. Der Seed bildet den echten Bestand ab; im Hintergrund
+        // gleicht refreshImagePool() den Pool per schlanker HEAD-Abfrage an die
+        // tatsächlich vorhandenen Dateien an (findet auch neu hinzugefügte Bilder
+        // ohne Code-Änderung).
+        const AI_MISSING = new Set([111, 153, 161]);
         const IMAGE_POOL = {
-            real: Array.from({length: 148}, (_, i) => `imageReal${String(i + 1).padStart(3, '0')}.jpg`),
-            ai: Array.from({length: 255}, (_, i) => `imageai${String(i + 1).padStart(3, '0')}.jpg`)
+            real: Array.from({ length: 148 }, (_, i) => `imageReal${String(i + 1).padStart(3, '0')}.jpg`),
+            ai: Array.from({ length: 258 }, (_, i) => i + 1)
+                .filter(n => !AI_MISSING.has(n))
+                .map(n => `imageai${String(n).padStart(3, '0')}.jpg`)
         };
+
+        // Selbstheilender Abgleich mit dem echten Dateibestand (HEAD, in Wellen,
+        // Abbruch nach 6 Fehlstellen in Folge → ~2 s, kein Bild-Body-Download).
+        (function refreshImagePool() {
+            const BATCH = 12, STOP_AFTER_MISSES = 6, MAX = 400;
+            const exists = async (src) => {
+                try {
+                    const ctrl = new AbortController();
+                    const to = setTimeout(() => ctrl.abort(), 8000);
+                    const res = await fetch(src, { method: 'HEAD', signal: ctrl.signal });
+                    clearTimeout(to);
+                    return res.ok;
+                } catch (e) { return null; }
+            };
+            const probe = async (prefix) => {
+                const found = []; let i = 1, misses = 0, errors = 0;
+                while (i <= MAX && misses < STOP_AFTER_MISSES) {
+                    const batch = [];
+                    for (let k = 0; k < BATCH && i <= MAX; k++, i++) batch.push(`${prefix}${String(i).padStart(3, '0')}.jpg`);
+                    const oks = await Promise.all(batch.map(exists));
+                    oks.forEach((ok, idx) => {
+                        if (ok === true) { found.push(batch[idx]); misses = 0; }
+                        else if (ok === null) { errors++; }
+                        else { misses++; }
+                    });
+                }
+                return { found, errors };
+            };
+            // Nur bei sauberem Durchlauf (keine HEAD-Fehler) übernehmen — sonst Seed behalten.
+            Promise.all([probe('imageReal'), probe('imageai')]).then(([real, ai]) => {
+                if (real.found.length && real.errors === 0) IMAGE_POOL.real = real.found;
+                if (ai.found.length && ai.errors === 0) IMAGE_POOL.ai = ai.found;
+            }).catch(() => { /* Seed bleibt */ });
+        })();
 
         // ═══════════════════════════════════════════════════════════
         // PHASE 3: SOUND ENGINE

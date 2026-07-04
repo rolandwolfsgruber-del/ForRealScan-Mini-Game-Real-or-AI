@@ -1833,30 +1833,68 @@
         const MAX_IMAGE_CHECK = 300;
 
         // --- Dynamic Image Discovery ---
+        // Die Bilder sind fortlaufend nummeriert (imageReal001.jpg …, imageai001.jpg …).
+        // FRÜHER wurden dafür 300 + 300 Kandidaten als vollständige <img>-Downloads
+        // gestartet und per Promise.all abgewartet. Auf dem HTTP/1.1-Host (max. 6
+        // parallele Verbindungen) dauerte das >70 s — der "Scanne Assets…"-Screen
+        // hing gefühlt ewig.
+        // JETZT: schlanke HEAD-Anfragen (nur Header, kein Bild-Body) in kleinen
+        // Wellen, mit Abbruch nach mehreren Fehlstellen in Folge. Ergebnis ~2 s,
+        // findet alle vorhandenen Bilder und erweitert sich selbst, wenn neue
+        // hinzugefügt werden (kein Code-Update nötig).
+        const DISCOVERY = { BATCH: 12, STOP_AFTER_MISSES: 6, MAX: MAX_IMAGE_CHECK };
+
         async function discoverImages() {
-            const checkImage = (src, label) => {
-                return new Promise((resolve) => {
-                    const img = new Image();
-                    img.onload = () => resolve({ src, label, exists: true });
-                    img.onerror = () => resolve({ src, label, exists: false });
-                    img.src = src;
-                });
+            // Existenz-Prüfung ohne Body-Download. Rückgabe: true = da, false = 404,
+            // null = HEAD nicht nutzbar (Netzwerk/Method-not-allowed) → Fallback.
+            const existsViaHead = async (src) => {
+                try {
+                    const ctrl = new AbortController();
+                    const to = setTimeout(() => ctrl.abort(), 8000);
+                    const res = await fetch(src, { method: 'HEAD', signal: ctrl.signal });
+                    clearTimeout(to);
+                    return res.ok;
+                } catch (e) {
+                    return null;
+                }
+            };
+            const existsViaImg = (src) => new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = src;
+            });
+
+            // Nummern der Reihe nach in Wellen prüfen; nach STOP_AFTER_MISSES
+            // aufeinanderfolgenden 404ern ist das Ende der Serie erreicht.
+            const probe = async (prefix, label, check) => {
+                const found = [];
+                let i = 1, misses = 0, errors = 0;
+                while (i <= DISCOVERY.MAX && misses < DISCOVERY.STOP_AFTER_MISSES) {
+                    const batch = [];
+                    for (let k = 0; k < DISCOVERY.BATCH && i <= DISCOVERY.MAX; k++, i++) {
+                        batch.push(`${prefix}${i.toString().padStart(3, '0')}.jpg`);
+                    }
+                    const oks = await Promise.all(batch.map(check));
+                    oks.forEach((ok, idx) => {
+                        if (ok === true) { found.push({ src: batch[idx], label }); misses = 0; }
+                        else if (ok === null) { errors++; }
+                        else { misses++; }
+                    });
+                }
+                return { found, errors };
             };
 
-            const promises = [];
-
-            for (let i = 1; i <= MAX_IMAGE_CHECK; i++) {
-                const num = i.toString().padStart(3, '0');
-                promises.push(checkImage(`imageReal${num}.jpg`, 'real'));
+            // Schneller Weg: HEAD. Falls der Host HEAD blockt (alles Fehler, nichts
+            // gefunden), klassisch per <img> nachprobieren.
+            let real = await probe('imageReal', 'real', existsViaHead);
+            let ai = await probe('imageai', 'ai', existsViaHead);
+            if (real.found.length === 0 && ai.found.length === 0 && (real.errors > 0 || ai.errors > 0)) {
+                real = await probe('imageReal', 'real', existsViaImg);
+                ai = await probe('imageai', 'ai', existsViaImg);
             }
 
-            for (let i = 1; i <= MAX_IMAGE_CHECK; i++) {
-                const num = i.toString().padStart(3, '0');
-                promises.push(checkImage(`imageai${num}.jpg`, 'ai'));
-            }
-
-            const results = await Promise.all(promises);
-            images = results.filter(r => r.exists).map(r => ({ src: r.src, label: r.label }));
+            images = [...real.found, ...ai.found];
             unusedImages = [...images];
 
             console.log(`Discovered ${images.length} images.`);
